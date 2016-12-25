@@ -63,4 +63,9 @@ public class MySqlTypeUtil {
     public static TypeProps getType(String type) {
         return javaDefaultMap.get(type);
     }
+
+
+    public static String[] getRecommendTypes(String fieldType) {
+        return javaRecommendMap.get(fieldType);
+    }
 }

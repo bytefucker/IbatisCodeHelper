@@ -20,7 +20,9 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/25.
@@ -45,6 +47,8 @@ public class GenCodeInsertDialog extends DialogWrapper {
     private PsiClass psiClass;
 
     private List<GenCodeProp> propList;
+
+    private Map<String, String> fieldTypeMap;
 
 
     private List<ClassFieldInfo> propFields;
@@ -119,6 +123,8 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         this.propFields = PsiClassUtil.buildPropMap(psiClass);
 
+        this.fieldTypeMap = extractMap(propFields);
+
         if (propFields.size() == 0) {
             //shall exit this and show with dialog
 
@@ -173,11 +179,10 @@ public class GenCodeInsertDialog extends DialogWrapper {
         propTable.getColumn(CANBENULLCOLUMN).setCellRenderer(new CheckButtonRender());
         propTable.getColumn(CANBENULLCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
 
-        String[] values = new String[]{"varchar", "text", "int"};
 
-        propTable.getColumn("type").setCellRenderer(new MyComboBoxRender(values));
+        propTable.getColumn("type").setCellRenderer(new MyComboBoxRender());
 
-        propTable.getColumn("type").setCellEditor(new MyComboBoxEditor(values));
+        propTable.getColumn("type").setCellEditor(new MyComboBoxEditor(new JComboBox()));
         propTable.setRowHeight(25);
 
         jScrollPane = new JScrollPane(propTable);
@@ -189,6 +194,14 @@ public class GenCodeInsertDialog extends DialogWrapper {
         //let generate the jtable use it to display.
         setTitle("create new mybatis files");
         init();
+    }
+
+    private Map<String, String> extractMap(List<ClassFieldInfo> propFields) {
+        Map<String, String> fieldTypeMap = new HashMap<>();
+        for (ClassFieldInfo info : propFields) {
+            fieldTypeMap.put(info.getFieldName(), info.getFieldType());
+        }
+        return fieldTypeMap;
     }
 
     private Object[][] getDatas(List<ClassFieldInfo> propFields, int columnLength) {
@@ -333,21 +346,64 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     }
 
-    class MyComboBoxRender extends JComboBox implements TableCellRenderer {
-        public MyComboBoxRender(String[] items) {
-            super(items);
-        }
+    class MyComboBoxRender implements TableCellRenderer {
+
+        private Map<Integer, JComboBox> jComboBoxMap = new HashMap<>();
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setSelectedItem(value);
-            return this;
+            if (jComboBoxMap.get(row) == null) {
+                JComboBox jComboBox = new JComboBox();
+                Object fieldName = table.getValueAt(row, 0);
+                String fieldType = fieldTypeMap.get(fieldName);
+                String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
+                TypeProps type = MySqlTypeUtil.getType(fieldType);
+                if (recommendTypes == null) {
+                    jComboBox.addItem(type.getDefaultType());
+                } else {
+                    for (String recommend : recommendTypes) {
+                        jComboBox.addItem(recommend);
+                    }
+                }
+                jComboBoxMap.put(row, jComboBox);
+            }
+            JComboBox jComboBox = jComboBoxMap.get(row);
+            if (value != null) {
+                jComboBox.setSelectedItem(value);
+            }
+            return jComboBox;
+            //find the filedType.
+
         }
     }
 
     class MyComboBoxEditor extends DefaultCellEditor {
-        public MyComboBoxEditor(String[] items) {
-            super(new JComboBox(items));
+
+        private Map<Integer, JComboBox> jComboBoxMap = new HashMap<>();
+
+        public MyComboBoxEditor(JComboBox comboBox) {
+            super(comboBox);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            if (jComboBoxMap.get(row) == null) {
+                JComboBox jComboBox = new JComboBox();
+                Object fieldName = table.getValueAt(row, 0);
+                String fieldType = fieldTypeMap.get(fieldName);
+                String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
+                TypeProps type = MySqlTypeUtil.getType(fieldType);
+                if (recommendTypes == null) {
+                    jComboBox.addItem(type.getDefaultType());
+                } else {
+                    for (String recommend : recommendTypes) {
+                        jComboBox.addItem(recommend);
+                    }
+                }
+                jComboBoxMap.put(row, jComboBox);
+            }
+            JComboBox jComboBox = jComboBoxMap.get(row);
+            return jComboBox;
         }
     }
 }
