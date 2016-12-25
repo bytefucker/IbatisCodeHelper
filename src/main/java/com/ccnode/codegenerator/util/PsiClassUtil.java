@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.util;
 
+import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTypesUtil;
 
@@ -60,5 +61,19 @@ public class PsiClassUtil {
             }
         }
         return null;
+    }
+
+    public static List<ClassFieldInfo> buildPropMap(PsiClass psiClass) {
+        List<ClassFieldInfo> lists = new ArrayList<>();
+        PsiField[] allFields = psiClass.getAllFields();
+        for (PsiField psiField : allFields) {
+            if (psiField.hasModifierProperty("private") && !psiField.hasModifierProperty("static")) {
+                ClassFieldInfo info = new ClassFieldInfo();
+                info.setFieldName(psiField.getName());
+                info.setFieldType(psiField.getType().getCanonicalText());
+                lists.add(info);
+            }
+        }
+        return lists;
     }
 }

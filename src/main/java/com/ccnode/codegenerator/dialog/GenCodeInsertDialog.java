@@ -1,6 +1,10 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
+import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
+import com.ccnode.codegenerator.dialog.datatype.TypeProps;
 import com.ccnode.codegenerator.util.GenCodeUtil;
+import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -23,9 +27,27 @@ import java.util.List;
  */
 public class GenCodeInsertDialog extends DialogWrapper {
 
+    public static final String COLUMNUNIQUE = "unique";
+    public static final String FILEDCOLUMN = "filed";
+    public static final String COLUMN_NAMECOLUMN = "columnName";
+
+    public static final String TYPECOLUMN = "type";
+
+    public static final String PRIMARYCOLUMN = "primary";
+
+    public static final String LENGTHCOLUMN = "length";
+
+    public static final String CANBENULLCOLUMN = "canBeNull";
+
+    public static final String DEFAULT_VALUE_COLUMN = "defaultValue";
+
+
     private PsiClass psiClass;
 
     private List<GenCodeProp> propList;
+
+
+    private List<ClassFieldInfo> propFields;
 
     //we will generate value base on it.
 
@@ -94,6 +116,17 @@ public class GenCodeInsertDialog extends DialogWrapper {
         super(project, true);
         myProject = project;
         this.psiClass = psiClass;
+
+        this.propFields = PsiClassUtil.buildPropMap(psiClass);
+
+        if (propFields.size() == 0) {
+            //shall exit this and show with dialog
+
+        }
+        //gonna construct all the values for the table.
+        String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
+
+        Object[][] propData = getDatas(propFields, columnNames.length);
         //init with propList.
         String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
         String className = psiClass.getName();
@@ -113,19 +146,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         daoNameText = new JTextField(className + "Dao.java");
 
-        String[] columnNames = {"filed", "columnName", "type", "length", "unique", "primary", "canBeNull", "defaultValue"};
-
-        Object[][] data = {
-                {
-                        "id", "id", "int", "11", true, true, false, 123
-                },
-                {
-                        "username", "username", "varchar", "50", true, true, false, ""
-
-                }
-        };
-
-        propTable = new JTable(data, columnNames) {
+        propTable = new JTable(propData, columnNames) {
             @Override
             public Dimension getPreferredScrollableViewportSize() {
                 int headerHeight = propTable.getTableHeader().getPreferredSize().height;
@@ -142,8 +163,23 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         propTable.getTableHeader().setReorderingAllowed(false);
 
-        propTable.getColumn("unique").setCellRenderer(new CheckButtonRender());
-        propTable.getColumn("unique").setCellEditor(new CheckButtonEditor(new JCheckBox()));
+        propTable.getColumn(COLUMNUNIQUE).setCellRenderer(new CheckButtonRender());
+        propTable.getColumn(COLUMNUNIQUE).setCellEditor(new CheckButtonEditor(new JCheckBox()));
+
+
+        propTable.getColumn(PRIMARYCOLUMN).setCellRenderer(new CheckButtonRender());
+        propTable.getColumn(PRIMARYCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
+
+        propTable.getColumn(CANBENULLCOLUMN).setCellRenderer(new CheckButtonRender());
+        propTable.getColumn(CANBENULLCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
+
+        String[] values = new String[]{"varchar", "text", "int"};
+
+        propTable.getColumn("type").setCellRenderer(new MyComboBoxRender(values));
+
+        propTable.getColumn("type").setCellEditor(new MyComboBoxEditor(values));
+        propTable.setRowHeight(25);
+
         jScrollPane = new JScrollPane(propTable);
 
 
@@ -155,11 +191,41 @@ public class GenCodeInsertDialog extends DialogWrapper {
         init();
     }
 
-    @Override
-    protected void setOKActionEnabled(boolean isEnabled) {
-        //fill with values.
+    private Object[][] getDatas(List<ClassFieldInfo> propFields, int columnLength) {
+        Object[][] ss = new Object[propFields.size()][];
+        for (int i = 0; i < propFields.size(); i++) {
+            Object[] mm = new Object[columnLength];
+            ClassFieldInfo info = propFields.get(i);
+            mm[0] = info.getFieldName();
+            mm[1] = GenCodeUtil.getUnderScore(info.getFieldName());
+            TypeProps typeProp = MySqlTypeUtil.getType(info.getFieldType());
+            if (typeProp == null) {
+                // TODO: 2016/12/25 ask user if ignore.
 
-        //
+            }
+            mm[2] = typeProp.getDefaultType();
+
+            mm[3] = typeProp.getSize();
+
+            mm[4] = typeProp.getUnique();
+
+            if (info.getFieldName().equals("id")) {
+                mm[5] = true;
+            } else {
+                mm[5] = false;
+            }
+            mm[6] = typeProp.getCanBeNull();
+
+            mm[7] = typeProp.getDefaultValue();
+
+            ss[i] = mm;
+        }
+        return ss;
+    }
+
+
+    @Override
+    protected void doOKAction() {
         return;
     }
 
@@ -265,5 +331,23 @@ public class GenCodeInsertDialog extends DialogWrapper {
         }
 
 
+    }
+
+    class MyComboBoxRender extends JComboBox implements TableCellRenderer {
+        public MyComboBoxRender(String[] items) {
+            super(items);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setSelectedItem(value);
+            return this;
+        }
+    }
+
+    class MyComboBoxEditor extends DefaultCellEditor {
+        public MyComboBoxEditor(String[] items) {
+            super(new JComboBox(items));
+        }
     }
 }
