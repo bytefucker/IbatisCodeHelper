@@ -26,6 +26,8 @@ public class GenCodeDialog extends DialogWrapper {
 
     private GenCodeType type = GenCodeType.INSERT;
 
+    private InsertDialogResult insertDialog;
+
     public GenCodeDialog(Project project, PsiClass psiClass) {
         super(project, true);
         myProject = project;
@@ -47,6 +49,8 @@ public class GenCodeDialog extends DialogWrapper {
             if (!b) {
                 return;
             } else {
+                //get the result of it.
+                insertDialog = genCodeInsertDialog.getInsertDialogResult();
                 super.doOKAction();
             }
         } else if (type == GenCodeType.UPDATE) {

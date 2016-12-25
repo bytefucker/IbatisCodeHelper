@@ -13,11 +13,13 @@ public class GenCodeProp {
 
     private Boolean unique;
 
-    private int size;
+    private String size;
 
     private String filedType;
 
     private String defaultValue;
+
+    private Boolean canBeNull;
 
     public String getFieldName() {
         return fieldName;
@@ -25,6 +27,14 @@ public class GenCodeProp {
 
     public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
+    }
+
+    public Boolean getCanBeNull() {
+        return canBeNull;
+    }
+
+    public void setCanBeNull(Boolean canBeNull) {
+        this.canBeNull = canBeNull;
     }
 
     public String getColumnName() {
@@ -51,11 +61,11 @@ public class GenCodeProp {
         this.unique = unique;
     }
 
-    public int getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(String size) {
         this.size = size;
     }
 

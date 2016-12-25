@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.*;
+import com.ccnode.codegenerator.dialog.exception.NotStringException;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -8,9 +9,11 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.Consumer;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -18,6 +21,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +55,9 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     private List<ClassFieldInfo> propFields;
 
+
+    private InsertDialogResult insertDialogResult;
+
     //we will generate value base on it.
 
     private JLabel sqlLable = new JLabel("sql file name:");
@@ -75,6 +82,20 @@ public class GenCodeInsertDialog extends DialogWrapper {
     private JButton daoOpenFolder = new JButton("open folder");
 
     private JTextField daoNameText;
+
+    private static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
+
+    private static final int FIELDCOLUMNINDEX = 0;
+
+    private static final int COLUMN_NAMECOLUMNINDEX = 1;
+
+    private static final int TYPECOLUMNINDEX = 2;
+    private static final int LENGTHCOLUMNINDEX = 3;
+    private static final int UNIQUECOLUMNINDEX = 4;
+    private static final int PRIMARYCOLUMNINDEX = 5;
+    private static final int CANBENULLCOLUMNINDEX = 6;
+
+    private static final int DEFAULT_VALUECOLUMNINDEX = 7;
 
     private JTextField daoPathText;
 
@@ -114,6 +135,10 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     private JTable propTable;
 
+    public InsertDialogResult getInsertDialogResult() {
+        return insertDialogResult;
+    }
+
     public GenCodeInsertDialog(Project project, PsiClass psiClass) {
         super(project, true);
         myProject = project;
@@ -128,7 +153,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         }
         //gonna construct all the values for the table.
-        String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
 
         Object[][] propData = getDatas(propFields, columnNames.length);
         //init with propList.
@@ -166,18 +190,16 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
             @Override
             public void setValueAt(Object aValue, int row, int column) {
+                // TODO: 2016/12/26 could do better not using getColumn.
                 super.setValueAt(aValue, row, column);
-                int modelIndex = propTable.getColumn(TYPECOLUMN).getModelIndex();
-                if (column == modelIndex) {
+                if (column == TYPECOLUMNINDEX) {
                     TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
-                    int lenIndex = propTable.getColumn(LENGTHCOLUMN).getModelIndex();
-                    int defaultValueIndex = propTable.getColumn(DEFAULT_VALUE_COLUMN).getModelIndex();
                     if (typeDefault == null) {
-                        super.setValueAt(null, row, lenIndex);
-                        super.setValueAt(null, row, defaultValueIndex);
+                        super.setValueAt(null, row, LENGTHCOLUMNINDEX);
+                        super.setValueAt(null, row, DEFAULT_VALUECOLUMNINDEX);
                     } else {
-                        super.setValueAt(typeDefault.getSize(), row, lenIndex);
-                        super.setValueAt(typeDefault.getDefaultValue(), row, defaultValueIndex);
+                        super.setValueAt(typeDefault.getSize(), row, LENGTHCOLUMNINDEX);
+                        super.setValueAt(typeDefault.getDefaultValue(), row, DEFAULT_VALUECOLUMNINDEX);
                     }
                 }
             }
@@ -226,19 +248,19 @@ public class GenCodeInsertDialog extends DialogWrapper {
             Object[] mm = new Object[columnLength];
             ClassFieldInfo info = propFields.get(i);
 
-            mm[0] = info.getFieldName();
-            mm[1] = GenCodeUtil.getUnderScore(info.getFieldName());
+            mm[FIELDCOLUMNINDEX] = info.getFieldName();
+            mm[COLUMN_NAMECOLUMNINDEX] = GenCodeUtil.getUnderScore(info.getFieldName());
             TypeProps typeProp = MySqlTypeUtil.getType(info.getFieldType());
             if (typeProp == null) {
                 // TODO: 2016/12/25 ask user if ignore.
             }
             customTypeProp(info, typeProp);
-            mm[2] = typeProp.getDefaultType();
-            mm[3] = typeProp.getSize();
-            mm[4] = typeProp.getUnique();
-            mm[5] = typeProp.getPrimary();
-            mm[6] = typeProp.getCanBeNull();
-            mm[7] = typeProp.getDefaultValue();
+            mm[TYPECOLUMNINDEX] = typeProp.getDefaultType();
+            mm[LENGTHCOLUMNINDEX] = typeProp.getSize();
+            mm[UNIQUECOLUMNINDEX] = typeProp.getUnique();
+            mm[PRIMARYCOLUMNINDEX] = typeProp.getPrimary();
+            mm[CANBENULLCOLUMNINDEX] = typeProp.getCanBeNull();
+            mm[DEFAULT_VALUECOLUMNINDEX] = typeProp.getDefaultValue();
             ss[i] = mm;
         }
         return ss;
@@ -249,6 +271,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
             typeProp.setPrimary(true);
         } else if (info.getFieldName().toLowerCase().equals("updatetime")) {
             TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault(MysqlTypeConstants.TIMESTAMP);
+            typeProp.setDefaultType(MysqlTypeConstants.TIMESTAMP);
             typeProp.setDefaultValue(typeDefault.getDefaultValue());
             typeProp.setSize(typeDefault.getSize());
         }
@@ -257,7 +280,140 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        return;
+        //first to check with all data.
+        try {
+            validateInput();
+        } catch (Exception e) {
+            Messages.showErrorDialog(myProject, e.getMessage(), "validate fail");
+            return;
+        }
+
+
+        InsertDialogResult toSeeResult = new InsertDialogResult();
+        //just go to set the value.
+        List<GenCodeProp> props = new ArrayList<>();
+        for (int i = 0; i < propFields.size(); i++) {
+            GenCodeProp prop = new GenCodeProp();
+            Object value = propTable.getValueAt(i, FIELDCOLUMNINDEX);
+            prop.setFieldName(formatString(value));
+
+            Object column = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
+            prop.setColumnName(formatString(column));
+
+            Object type = propTable.getValueAt(i, TYPECOLUMNINDEX);
+            prop.setFiledType(formatString(type));
+
+            Object length = propTable.getValueAt(i, LENGTHCOLUMNINDEX);
+            prop.setSize(formatString(length));
+
+            Object unique = propTable.getValueAt(i, UNIQUECOLUMNINDEX);
+            prop.setUnique(formatBoolean(unique));
+
+            Object primary = propTable.getValueAt(i, PRIMARYCOLUMNINDEX);
+            prop.setPrimaryKey(formatBoolean(primary));
+            if (prop.getPrimaryKey()) {
+                toSeeResult.setPrimaryKey(prop.getColumnName());
+            }
+            Object canbenull = propTable.getValueAt(i, CANBENULLCOLUMNINDEX);
+            prop.setCanBeNull(formatBoolean(canbenull));
+
+            Object defaultValue = propTable.getValueAt(i, DEFAULT_VALUECOLUMNINDEX);
+            prop.setDefaultValue(formatString(defaultValue));
+            props.add(prop);
+        }
+
+        List<InsertFileProp> insertFileProps = new ArrayList<>();
+        if (sqlFileRaidio.isSelected()) {
+            InsertFileProp prop = new InsertFileProp();
+            prop.setType(InsertFileType.SQL);
+            prop.setName(sqlNameText.getText());
+            prop.setPath(sqlPathText.getText());
+            insertFileProps.add(prop);
+        }
+
+        if (daoFileRaidio.isSelected()) {
+            InsertFileProp prop = new InsertFileProp();
+            prop.setType(InsertFileType.DAO);
+            prop.setName(daoNameText.getText());
+            prop.setPath(daoPathText.getText());
+            insertFileProps.add(prop);
+        }
+
+        if (serviceFileRaidio.isSelected()) {
+            InsertFileProp prop = new InsertFileProp();
+            prop.setType(InsertFileType.SERVICE);
+            prop.setName(serviceNameText.getText());
+            prop.setPath(servicePathText.getText());
+            insertFileProps.add(prop);
+        }
+
+        if (mapperFileRaidio.isSelected()) {
+            InsertFileProp prop = new InsertFileProp();
+            prop.setType(InsertFileType.MAPPER_XML);
+            prop.setName(mapperNameText.getText());
+            prop.setPath(mapperPathText.getText());
+            insertFileProps.add(prop);
+        }
+
+        toSeeResult.setFileProps(insertFileProps);
+        toSeeResult.setPropList(props);
+        toSeeResult.setTableName(tableNameText.getText());
+        this.insertDialogResult = toSeeResult;
+        super.doOKAction();
+    }
+
+    private void validateInput() {
+        Validate.notBlank(tableNameText.getText(), "table name is empty");
+        if (sqlFileRaidio.isSelected()) {
+            Validate.notBlank(sqlNameText.getText(), "sql name is empty");
+            Validate.notBlank(sqlPathText.getText(), "sql path is empty");
+        }
+
+        if (daoFileRaidio.isSelected()) {
+            Validate.notBlank(daoNameText.getText(), "dao name is empty");
+            Validate.notBlank(daoPathText.getText(), "dao path is empty");
+        }
+
+        if (serviceFileRaidio.isSelected()) {
+            Validate.notBlank(serviceNameText.getText(), "service name is empty");
+            Validate.notBlank(servicePathText.getText(), "service path is empty");
+        }
+
+        if (mapperFileRaidio.isSelected()) {
+            Validate.notBlank(mapperNameText.getText(), "mapper name is empty");
+            Validate.notBlank(mapperPathText.getText(), "mapper path is empty");
+        }
+
+        for (int i = 0; i < propFields.size(); i++) {
+            Object valueAt = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
+            String message = "column name is empty on row " + i;
+            Validate.notNull(valueAt, message);
+            if (!(valueAt instanceof String)) {
+                throw new RuntimeException(message);
+            }
+            Validate.notBlank((String) valueAt, message);
+        }
+    }
+
+    private Boolean formatBoolean(Object unique) {
+        if (unique == null) {
+            return false;
+        }
+
+        if (!(unique instanceof Boolean)) {
+            return false;
+        }
+        return (Boolean) unique;
+    }
+
+    private String formatString(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (!(value instanceof String)) {
+            throw new NotStringException();
+        }
+        return ((String) value).trim();
     }
 
     @Nullable
