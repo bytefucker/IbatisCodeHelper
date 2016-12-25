@@ -124,13 +124,21 @@ public class GenCodeInsertDialog extends DialogWrapper {
                 }
         };
 
-        propTable = new JTable(data, columnNames);
-
-        jScrollPane = new JScrollPane(propTable){
-
+        propTable = new JTable(data, columnNames) {
+            @Override
+            public Dimension getPreferredScrollableViewportSize() {
+                int headerHeight = propTable.getTableHeader().getPreferredSize().height;
+                int height = headerHeight + (10 * getRowHeight());
+                int width = getPreferredSize().width;
+                return new Dimension(width, height);
+            }
         };
 
+        jScrollPane = new JScrollPane(propTable);
+
+
         propTable.setFillsViewportHeight(true);
+        propTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //let generate the jtable use it to display.
         setTitle("create new mybatis files");
@@ -159,7 +167,8 @@ public class GenCodeInsertDialog extends DialogWrapper {
         bag.gridx = 1;
         jPanel.add(tableNameText, bag);
 
-        bag.anchor=GridBagConstraints.NORTHWEST;
+        bag.anchor = GridBagConstraints.NORTHWEST;
+        bag.fill = GridBagConstraints.HORIZONTAL;
         bag.gridy++;
         bag.gridx = 0;
         bag.gridwidth = 10;
