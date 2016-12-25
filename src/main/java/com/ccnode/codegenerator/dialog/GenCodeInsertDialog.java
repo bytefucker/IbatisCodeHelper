@@ -1,8 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
-import com.ccnode.codegenerator.dialog.datatype.MySqlTypeUtil;
-import com.ccnode.codegenerator.dialog.datatype.TypeProps;
+import com.ccnode.codegenerator.dialog.datatype.*;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -126,7 +124,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         this.fieldTypeMap = extractMap(propFields);
 
         if (propFields.size() == 0) {
-            //shall exit this and show with dialog
+            // TODO: 2016/12/25
 
         }
         //gonna construct all the values for the table.
@@ -137,7 +135,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
         String className = psiClass.getName();
 
-        tableNameText = new JTextField(GenCodeUtil.getUnderScore(className));
+        tableNameText = new JTextField(GenCodeUtil.getUnderScore(className), 15);
         //the default folder name.
         sqlPathText = new JTextField(psiFileFolderPath);
         daoPathText = new JTextField(psiFileFolderPath);
@@ -165,6 +163,24 @@ public class GenCodeInsertDialog extends DialogWrapper {
             public boolean isCellEditable(int row, int column) {
                 return column != 0;
             }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
+                super.setValueAt(aValue, row, column);
+                int modelIndex = propTable.getColumn(TYPECOLUMN).getModelIndex();
+                if (column == modelIndex) {
+                    TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
+                    int lenIndex = propTable.getColumn(LENGTHCOLUMN).getModelIndex();
+                    int defaultValueIndex = propTable.getColumn(DEFAULT_VALUE_COLUMN).getModelIndex();
+                    if (typeDefault == null) {
+                        super.setValueAt(null, row, lenIndex);
+                        super.setValueAt(null, row, defaultValueIndex);
+                    } else {
+                        super.setValueAt(typeDefault.getSize(), row, lenIndex);
+                        super.setValueAt(typeDefault.getDefaultValue(), row, defaultValueIndex);
+                    }
+                }
+            }
         };
 
         propTable.getTableHeader().setReorderingAllowed(false);
@@ -180,9 +196,9 @@ public class GenCodeInsertDialog extends DialogWrapper {
         propTable.getColumn(CANBENULLCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
 
 
-        propTable.getColumn("type").setCellRenderer(new MyComboBoxRender());
+        propTable.getColumn(TYPECOLUMN).setCellRenderer(new MyComboBoxRender());
 
-        propTable.getColumn("type").setCellEditor(new MyComboBoxEditor(new JComboBox()));
+        propTable.getColumn(TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox()));
         propTable.setRowHeight(25);
 
         jScrollPane = new JScrollPane(propTable);
@@ -209,31 +225,33 @@ public class GenCodeInsertDialog extends DialogWrapper {
         for (int i = 0; i < propFields.size(); i++) {
             Object[] mm = new Object[columnLength];
             ClassFieldInfo info = propFields.get(i);
+
             mm[0] = info.getFieldName();
             mm[1] = GenCodeUtil.getUnderScore(info.getFieldName());
             TypeProps typeProp = MySqlTypeUtil.getType(info.getFieldType());
             if (typeProp == null) {
                 // TODO: 2016/12/25 ask user if ignore.
-
             }
+            customTypeProp(info, typeProp);
             mm[2] = typeProp.getDefaultType();
-
             mm[3] = typeProp.getSize();
-
             mm[4] = typeProp.getUnique();
-
-            if (info.getFieldName().equals("id")) {
-                mm[5] = true;
-            } else {
-                mm[5] = false;
-            }
+            mm[5] = typeProp.getPrimary();
             mm[6] = typeProp.getCanBeNull();
-
             mm[7] = typeProp.getDefaultValue();
-
             ss[i] = mm;
         }
         return ss;
+    }
+
+    private void customTypeProp(ClassFieldInfo info, TypeProps typeProp) {
+        if (info.getFieldName().equals("id")) {
+            typeProp.setPrimary(true);
+        } else if (info.getFieldName().toLowerCase().equals("updatetime")) {
+            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault(MysqlTypeConstants.TIMESTAMP);
+            typeProp.setDefaultValue(typeDefault.getDefaultValue());
+            typeProp.setSize(typeDefault.getSize());
+        }
     }
 
 
@@ -370,6 +388,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
             JComboBox jComboBox = jComboBoxMap.get(row);
             if (value != null) {
                 jComboBox.setSelectedItem(value);
+                //
             }
             return jComboBox;
             //find the filedType.
@@ -379,7 +398,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     class MyComboBoxEditor extends DefaultCellEditor {
 
-        private Map<Integer, JComboBox> jComboBoxMap = new HashMap<>();
+        private Map<Integer, String[]> itemMap = new HashMap<>();
 
         public MyComboBoxEditor(JComboBox comboBox) {
             super(comboBox);
@@ -387,23 +406,32 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            if (jComboBoxMap.get(row) == null) {
-                JComboBox jComboBox = new JComboBox();
+            JComboBox editorComponent
+                    = (JComboBox) this.editorComponent;
+            editorComponent.removeAllItems();
+            if (itemMap.get(row) == null) {
                 Object fieldName = table.getValueAt(row, 0);
                 String fieldType = fieldTypeMap.get(fieldName);
                 String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
                 TypeProps type = MySqlTypeUtil.getType(fieldType);
                 if (recommendTypes == null) {
-                    jComboBox.addItem(type.getDefaultType());
+                    editorComponent.addItem(type.getDefaultType());
+                    itemMap.put(row, new String[]{type.getDefaultType()});
                 } else {
                     for (String recommend : recommendTypes) {
-                        jComboBox.addItem(recommend);
+                        editorComponent.addItem(recommend);
                     }
+                    itemMap.put(row, recommendTypes);
                 }
-                jComboBoxMap.put(row, jComboBox);
+            } else {
+                for (String recommend : itemMap.get(row)) {
+                    editorComponent.addItem(recommend);
+                }
             }
-            JComboBox jComboBox = jComboBoxMap.get(row);
-            return jComboBox;
+
+            return super.getTableCellEditorComponent(table, value, isSelected, row, column);
         }
+
+
     }
 }

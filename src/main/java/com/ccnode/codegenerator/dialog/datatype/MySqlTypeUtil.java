@@ -8,48 +8,75 @@ import java.util.Map;
  */
 public class MySqlTypeUtil {
 
-    private static Map<String, TypeProps> javaDefaultMap = new HashMap<>();
+    private static Map<String, String> javaDefaultMap = new HashMap<>();
 
     private static Map<String, String[]> javaRecommendMap = new HashMap<>();
 
 
+    private static Map<String, TypeDefault> typeDefaultMap = new HashMap<>();
+
+
     static {
 
-        TypeProps intTypeProp = new TypeProps(MysqlTypeConstants.INTEGER, "11", false, false, "-1");
-        javaDefaultMap.put("int", intTypeProp);
-        javaDefaultMap.put("java.lang.Integer", intTypeProp);
+        javaDefaultMap.put("int", MysqlTypeConstants.INTEGER);
+        javaDefaultMap.put("java.lang.Integer", MysqlTypeConstants.INTEGER);
 
-        TypeProps longDefault = new TypeProps(MysqlTypeConstants.BIGINT, "15", false, false, "-1");
-        javaDefaultMap.put("long", longDefault);
-        javaDefaultMap.put("java.lang.Long", longDefault);
+        typeDefaultMap.put(MysqlTypeConstants.INTEGER, new TypeDefault("11", "-1"));
 
-        TypeProps floatTypeProp = new TypeProps(MysqlTypeConstants.FLOAT, "15", false, false, "-1.0");
+        TypeDefault longDefault = new TypeDefault("15", "-1");
+        javaDefaultMap.put("long", MysqlTypeConstants.BIGINT);
+        javaDefaultMap.put("java.lang.Long", MysqlTypeConstants.BIGINT);
 
-        javaDefaultMap.put("float", floatTypeProp);
-        javaDefaultMap.put("java.lang.FLoat", floatTypeProp);
+        typeDefaultMap.put(MysqlTypeConstants.BIGINT, longDefault);
 
-        TypeProps doubleTypeProp = new TypeProps(MysqlTypeConstants.DOUBLE, "15", false, false, "-1.0");
-        javaDefaultMap.put("double", doubleTypeProp);
-        javaDefaultMap.put("java.lang.DOUBLE", doubleTypeProp);
+        TypeDefault floatTypeProp = new TypeDefault("15", "-1.0");
 
-
-        TypeProps booleanProp = new TypeProps(MysqlTypeConstants.TINYINT, "4", false, false, "-1");
-        javaDefaultMap.put("boolean", booleanProp);
-        javaDefaultMap.put("java.lang.Boolean", booleanProp);
+        javaDefaultMap.put("float", MysqlTypeConstants.FLOAT);
+        javaDefaultMap.put("java.lang.FLoat", MysqlTypeConstants.FLOAT);
+        typeDefaultMap.put(MysqlTypeConstants.FLOAT, floatTypeProp);
 
 
-        javaDefaultMap.put("java.util.Date", new TypeProps(MysqlTypeConstants.DATETIME, "", false, false, "1000-01-01 00:00:00"));
+        TypeDefault doubleTypeProp = new TypeDefault("15", "-1.0");
+        javaDefaultMap.put("double", MysqlTypeConstants.DOUBLE);
+        javaDefaultMap.put("java.lang.DOUBLE", MysqlTypeConstants.DOUBLE);
 
-        javaDefaultMap.put("java.lang.String", new TypeProps(MysqlTypeConstants.VARCHAR, "50", false, false, "\'\'"));
+        typeDefaultMap.put(MysqlTypeConstants.DOUBLE, doubleTypeProp);
 
-        TypeProps blogProp = new TypeProps(MysqlTypeConstants.BLOB, "", false, false, "\'\'");
-        javaDefaultMap.put("java.lang.Byte", blogProp);
-        javaDefaultMap.put("byte[]", blogProp);
-        javaDefaultMap.put("java.math.BigDecimal", new TypeProps(MysqlTypeConstants.DECIMAL, "13,4", false, false, "-1"));
+        TypeDefault booleanProp = new TypeDefault("4", "-1");
+        javaDefaultMap.put("boolean", MysqlTypeConstants.TINYINT);
+        javaDefaultMap.put("java.lang.Boolean", MysqlTypeConstants.TINYINT);
 
-        TypeProps shortProp = new TypeProps(MysqlTypeConstants.MEDIUMINT, "6", false, false, "-1");
-        javaDefaultMap.put("short", shortProp);
-        javaDefaultMap.put("java.lang.Short", shortProp);
+        typeDefaultMap.put(MysqlTypeConstants.TINYINT, booleanProp);
+
+        TypeDefault dateTimeDefault = new TypeDefault("", "1000-01-01 00:00:00");
+        javaDefaultMap.put("java.util.Date", MysqlTypeConstants.DATETIME);
+
+        typeDefaultMap.put(MysqlTypeConstants.DATETIME, dateTimeDefault);
+
+
+        TypeDefault varcharDefault = new TypeDefault("50", "\'\'");
+        javaDefaultMap.put("java.lang.String", MysqlTypeConstants.VARCHAR);
+
+        typeDefaultMap.put(MysqlTypeConstants.VARCHAR, varcharDefault);
+
+        TypeDefault blogDefault = new TypeDefault("", "\'\'");
+        javaDefaultMap.put("java.lang.Byte", MysqlTypeConstants.BLOB);
+        javaDefaultMap.put("byte[]", MysqlTypeConstants.BLOB);
+        typeDefaultMap.put(MysqlTypeConstants.BLOB, blogDefault);
+
+
+        TypeDefault decimalDefault = new TypeDefault("13,4", "-1");
+        javaDefaultMap.put("java.math.BigDecimal", MysqlTypeConstants.DECIMAL);
+        typeDefaultMap.put(MysqlTypeConstants.DECIMAL, decimalDefault);
+
+        TypeDefault shortDefault = new TypeDefault("6", "-1");
+        javaDefaultMap.put("short", MysqlTypeConstants.MEDIUMINT);
+        javaDefaultMap.put("java.lang.Short", MysqlTypeConstants.MEDIUMINT);
+        typeDefaultMap.put(MysqlTypeConstants.MEDIUMINT, shortDefault);
+
+        TypeDefault timeStampDefault = new TypeDefault(null, "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+        typeDefaultMap.put(MysqlTypeConstants.TIMESTAMP, timeStampDefault);
+
 
         String[] stringType = new String[]{MysqlTypeConstants.VARCHAR, MysqlTypeConstants.TEXT, MysqlTypeConstants.CHAR};
         javaRecommendMap.put("java.lang.String", stringType);
@@ -61,7 +88,14 @@ public class MySqlTypeUtil {
 
 
     public static TypeProps getType(String type) {
-        return javaDefaultMap.get(type);
+        String m = javaDefaultMap.get(type);
+        TypeDefault typeDefault = typeDefaultMap.get(m);
+        TypeProps props = new TypeProps(m, typeDefault.getSize(), typeDefault.getDefaultValue());
+        return props;
+    }
+
+    public static TypeDefault getTypeDefault(String type) {
+        return typeDefaultMap.get(type);
     }
 
 

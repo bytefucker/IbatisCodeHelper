@@ -14,6 +14,16 @@ public class TypeProps {
 
     private String defaultValue;
 
+    private Boolean primary;
+
+
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
 
     public String getDefaultType() {
         return defaultType;
@@ -56,11 +66,12 @@ public class TypeProps {
     }
 
 
-    public TypeProps(String defaultType, String size, Boolean canBeNull, Boolean unique, String defaultValue) {
+    public TypeProps(String defaultType, String size, String defaultValue) {
         this.defaultType = defaultType;
         this.size = size;
-        this.canBeNull = canBeNull;
-        this.unique = unique;
         this.defaultValue = defaultValue;
+        this.canBeNull = false;
+        this.unique = false;
+        this.primary = false;
     }
 }

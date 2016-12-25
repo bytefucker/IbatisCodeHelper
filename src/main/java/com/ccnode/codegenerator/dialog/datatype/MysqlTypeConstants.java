@@ -22,7 +22,7 @@ public class MysqlTypeConstants {
 
     public static final String DATE = "DATE";
 
-    public static final String DATETIME = "DATATIME";
+    public static final String DATETIME = "DATETIME";
 
     public static final String TIMESTAMP = "TIMESTAMP";
 
