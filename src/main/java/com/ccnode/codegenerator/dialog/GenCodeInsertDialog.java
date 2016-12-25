@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -78,8 +79,15 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
     private JTextField servicePathText;
 
-
     private Project myProject;
+
+    private JLabel tableName = new JLabel("table name:");
+
+    private JTextField tableNameText;
+
+    private JScrollPane jScrollPane;
+
+    private JTable propTable;
 
     public GenCodeInsertDialog(Project project, PsiClass psiClass) {
         super(project, true);
@@ -88,20 +96,43 @@ public class GenCodeInsertDialog extends DialogWrapper {
         //init with propList.
         String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
         String className = psiClass.getName();
+
+        tableNameText = new JTextField(GenCodeUtil.getUnderScore(className));
         //the default folder name.
         sqlPathText = new JTextField(psiFileFolderPath);
-        daoPathText=new JTextField(psiFileFolderPath);
-        mapperPathText=new JTextField(psiFileFolderPath);
-        servicePathText=new JTextField(psiFileFolderPath);
+        daoPathText = new JTextField(psiFileFolderPath);
+        mapperPathText = new JTextField(psiFileFolderPath);
+        servicePathText = new JTextField(psiFileFolderPath);
 
         sqlNameText = new JTextField(className + ".sql");
 
-        mapperNameText= new JTextField(className + "Dao.xml");
+        mapperNameText = new JTextField(className + "Dao.xml");
 
-        serviceNameText= new JTextField(className + "Service.java");
+        serviceNameText = new JTextField(className + "Service.java");
 
-        daoNameText= new JTextField(className + "Dao.java");
+        daoNameText = new JTextField(className + "Dao.java");
 
+        String[] columnNames = {"filed", "columnName", "type", "length", "unique", "primary", "canBeNull", "defaultValue"};
+
+        Object[][] data = {
+                {
+                        "id", "id", "int", "11", new JRadioButton("", true), new JRadioButton("", true), new JRadioButton("", false), 123
+                },
+                {
+                        "username", "username", "varchar", "50", new JRadioButton("", true), new JRadioButton("", true), new JRadioButton("", false), ""
+
+                }
+        };
+
+        propTable = new JTable(data, columnNames);
+
+        jScrollPane = new JScrollPane(propTable){
+
+        };
+
+        propTable.setFillsViewportHeight(true);
+
+        //let generate the jtable use it to display.
         setTitle("create new mybatis files");
         init();
     }
@@ -120,19 +151,37 @@ public class GenCodeInsertDialog extends DialogWrapper {
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new GridBagLayout());
         GridBagConstraints bag = new GridBagConstraints();
+        int mygridy = 0;
+        bag.gridy = mygridy++;
         bag.gridx = 0;
-        bag.gridy = 0;
+        jPanel.add(tableName, bag);
+
+        bag.gridx = 1;
+        jPanel.add(tableNameText, bag);
+
+        bag.anchor=GridBagConstraints.NORTHWEST;
+        bag.gridy++;
+        bag.gridx = 0;
+        bag.gridwidth = 10;
+
+//        jScrollPane.setMinimumSize(jScrollPane.getPreferredSize());
+        jPanel.add(jScrollPane, bag);
+
+        mygridy += 1;
+        bag.gridwidth = 1;
+        bag.gridy = mygridy++;
+        bag.gridx = 0;
         createPanel(jPanel, bag, sqlFileRaidio, sqlLable, sqlNameText, sqlPathLable, sqlPathText, sqlOpenFolder, myProject);
 
-        bag.gridy = 1;
+        bag.gridy = mygridy++;
         bag.gridx = 0;
         createPanel(jPanel, bag, daoFileRaidio, daoLable, daoNameText, daoPathLable, daoPathText, daoOpenFolder, myProject);
 
-        bag.gridy = 2;
+        bag.gridy = mygridy++;
         bag.gridx = 0;
         createPanel(jPanel, bag, mapperFileRaidio, mapperLable, mapperNameText, mapperPathLable, mapperPathText, mapperOpenFolder, myProject);
 
-        bag.gridy = 3;
+        bag.gridy = mygridy++;
         bag.gridx = 0;
         createPanel(jPanel, bag, serviceFileRaidio, serviceLable, serviceNameText, servicePathLable, servicePathText, serviceOpenFolder, myProject);
         return jPanel;
