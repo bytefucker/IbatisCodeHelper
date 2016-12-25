@@ -12,6 +12,7 @@ import com.intellij.util.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -116,10 +117,10 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         Object[][] data = {
                 {
-                        "id", "id", "int", "11", new JRadioButton("", true), new JRadioButton("", true), new JRadioButton("", false), 123
+                        "id", "id", "int", "11", true, true, false, 123
                 },
                 {
-                        "username", "username", "varchar", "50", new JRadioButton("", true), new JRadioButton("", true), new JRadioButton("", false), ""
+                        "username", "username", "varchar", "50", true, true, false, ""
 
                 }
         };
@@ -132,8 +133,17 @@ public class GenCodeInsertDialog extends DialogWrapper {
                 int width = getPreferredSize().width;
                 return new Dimension(width, height);
             }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
         };
 
+        propTable.getTableHeader().setReorderingAllowed(false);
+
+        propTable.getColumn("unique").setCellRenderer(new CheckButtonRender());
+        propTable.getColumn("unique").setCellEditor(new CheckButtonEditor(new JCheckBox()));
         jScrollPane = new JScrollPane(propTable);
 
 
@@ -224,7 +234,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
                 FileChooserDescriptor fcd = FileChooserDescriptorFactory.createSingleFolderDescriptor();
                 fcd.setShowFileSystemRoots(true);
                 fcd.setTitle("Choose a folder...");
-                fcd.setDescription("choose the path to store your sql file");
+                fcd.setDescription("choose the path to store file");
                 fcd.setHideIgnored(false);
 //                fcd.setRoots(psiClass.getContainingFile().getVirtualFile().getParent());
                 FileChooser.chooseFiles(fcd, myProject, myProject.getBaseDir(), new Consumer<List<VirtualFile>>() {
@@ -237,5 +247,23 @@ public class GenCodeInsertDialog extends DialogWrapper {
         });
         bag.gridx = 5;
         jPanel.add(sqlOpenFolder, bag);
+    }
+
+    class CheckButtonRender extends JCheckBox implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setSelected((value != null && ((Boolean) value).booleanValue()));
+            return this;
+        }
+    }
+
+
+    class CheckButtonEditor extends DefaultCellEditor {
+        public CheckButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+        }
+
+
     }
 }
