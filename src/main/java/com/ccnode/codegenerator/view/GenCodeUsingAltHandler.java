@@ -1,5 +1,6 @@
 package com.ccnode.codegenerator.view;
 
+import com.ccnode.codegenerator.dialog.GenCodeDialog;
 import com.ccnode.codegenerator.genCode.GenCodeService;
 import com.ccnode.codegenerator.genCode.UserConfigService;
 import com.ccnode.codegenerator.pojo.AltInsertInfo;
@@ -42,6 +43,9 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
 
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
+        if (project == null) {
+            return;
+        }
         if (!CodeInsightUtilBase.prepareEditorForWrite(editor)) return;
         if (!FileDocumentManager.getInstance().requestWriting(editor.getDocument(), project)) {
             return;
@@ -55,13 +59,15 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         }
         VirtualFileManager.getInstance().syncRefresh();
         ApplicationManager.getApplication().saveAll();
-        if (project == null) {
-            return;
-        }
         String projectPath = parent.toString();
         UserConfigService.loadUserConfigNew(project, moduleForFile);
         if (projectPath == null) {
             projectPath = StringUtils.EMPTY;
+        }
+        GenCodeDialog genCodeDialog = new GenCodeDialog(project, aClass);
+        boolean b = genCodeDialog.showAndGet();
+        if (!b) {
+            return;
         }
         GenCodeResponse genCodeResponse = new GenCodeResponse();
         GenCodeResponseHelper.setResponse(genCodeResponse);
