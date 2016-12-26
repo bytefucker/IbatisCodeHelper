@@ -2,15 +2,10 @@ package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.dialog.GenCodeDialog;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
-import com.ccnode.codegenerator.genCode.GenCodeService;
 import com.ccnode.codegenerator.genCode.UserConfigService;
-import com.ccnode.codegenerator.pojo.AltInsertInfo;
 import com.ccnode.codegenerator.pojo.ChangeInfo;
-import com.ccnode.codegenerator.pojo.GenCodeRequest;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
-import com.ccnode.codegenerator.pojoHelper.GenCodeResponseHelper;
-import com.ccnode.codegenerator.service.SendToServerService;
-import com.ccnode.codegenerator.service.pojo.GenCodeServerRequest;
+import com.ccnode.codegenerator.service.pojo.GenerateInsertCodeService;
 import com.ccnode.codegenerator.util.LoggerWrapper;
 import com.ccnode.codegenerator.util.PojoUtil;
 import com.google.common.collect.Lists;
@@ -23,7 +18,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -72,38 +66,40 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         } else {
             InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
             //build everything on it.
+            GenerateInsertCodeService.generateInsert(insertDialogResult);
 
+            return;
         }
-        GenCodeResponse genCodeResponse = new GenCodeResponse();
-        GenCodeResponseHelper.setResponse(genCodeResponse);
-        try {
-            GenCodeRequest request = new GenCodeRequest(Lists.newArrayList(), projectPath,
-                    System.getProperty("file.separator"));
-            AltInsertInfo insertInfo = new AltInsertInfo();
-            insertInfo.setSrcClass(aClass);
-            insertInfo.setPath(file.getVirtualFile().getPath());
-            request.setInfo(insertInfo);
-            request.setProject(project);
-            genCodeResponse = GenCodeService.genCode(request);
-            VirtualFileManager.getInstance().syncRefresh();
-            LoggerWrapper.saveAllLogs(projectPath);
-//            if(!SettingService.showDonateBtn()){
-            Messages.showMessageDialog(project, buildEffectRowMsg(genCodeResponse), genCodeResponse.getStatus(), null);
-//            }else{
-//                int result = Messages.showOkCancelDialog(project, buildEffectRowMsg(genCodeResponse), genCodeResponse.getStatus() ,"Donate", "OK", null);
-//                if(result != 2){
-//                    BrowserLauncher.getInstance().browse(UrlManager.getDonateClickUrl() , WebBrowserManager.getInstance().getFirstActiveBrowser());
-//                    SettingService.setDonated();
-//                }
-//            }
-        } catch (Throwable e) {
-            LOGGER.error("actionPerformed error", e);
-            genCodeResponse.setThrowable(e);
-        } finally {
-            GenCodeServerRequest request = SendToServerService.buildGenCodeRequest(genCodeResponse);
-            SendToServerService.post(project, request);
-        }
-        VirtualFileManager.getInstance().syncRefresh();
+//        GenCodeResponse genCodeResponse = new GenCodeResponse();
+//        GenCodeResponseHelper.setResponse(genCodeResponse);
+//        try {
+//            GenCodeRequest request = new GenCodeRequest(Lists.newArrayList(), projectPath,
+//                    System.getProperty("file.separator"));
+//            AltInsertInfo insertInfo = new AltInsertInfo();
+//            insertInfo.setSrcClass(aClass);
+//            insertInfo.setPath(file.getVirtualFile().getPath());
+//            request.setInfo(insertInfo);
+//            request.setProject(project);
+//            genCodeResponse = GenCodeService.genCode(request);
+//            VirtualFileManager.getInstance().syncRefresh();
+//            LoggerWrapper.saveAllLogs(projectPath);
+////            if(!SettingService.showDonateBtn()){
+//            Messages.showMessageDialog(project, buildEffectRowMsg(genCodeResponse), genCodeResponse.getStatus(), null);
+////            }else{
+////                int result = Messages.showOkCancelDialog(project, buildEffectRowMsg(genCodeResponse), genCodeResponse.getStatus() ,"Donate", "OK", null);
+////                if(result != 2){
+////                    BrowserLauncher.getInstance().browse(UrlManager.getDonateClickUrl() , WebBrowserManager.getInstance().getFirstActiveBrowser());
+////                    SettingService.setDonated();
+////                }
+////            }
+//        } catch (Throwable e) {
+//            LOGGER.error("actionPerformed error", e);
+//            genCodeResponse.setThrowable(e);
+//        } finally {
+//            GenCodeServerRequest request = SendToServerService.buildGenCodeRequest(genCodeResponse);
+//            SendToServerService.post(project, request);
+//        }
+//        VirtualFileManager.getInstance().syncRefresh();
     }
 
     @Override

@@ -48,7 +48,7 @@ public class MySqlTypeUtil {
 
         typeDefaultMap.put(MysqlTypeConstants.TINYINT, booleanProp);
 
-        TypeDefault dateTimeDefault = new TypeDefault("", "1000-01-01 00:00:00");
+        TypeDefault dateTimeDefault = new TypeDefault("", "'1000-01-01 00:00:00'");
         javaDefaultMap.put("java.util.Date", MysqlTypeConstants.DATETIME);
 
         typeDefaultMap.put(MysqlTypeConstants.DATETIME, dateTimeDefault);

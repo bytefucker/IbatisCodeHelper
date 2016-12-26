@@ -134,7 +134,7 @@ public class GenCodeUtil {
 
 
     public static String wrapComma(String value) {
-        return "`" + value + "``";
+        return "`" + value + "`";
     }
 
 

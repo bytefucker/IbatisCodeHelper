@@ -21,6 +21,8 @@ public class GenCodeProp {
 
     private Boolean canBeNull;
 
+    private String comment;
+
     public String getFieldName() {
         return fieldName;
     }
