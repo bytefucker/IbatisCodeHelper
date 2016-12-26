@@ -4,19 +4,25 @@ package com.ccnode.codegenerator.dialog;
  * Created by bruce.ge on 2016/12/25.
  */
 public class InsertFileProp {
-    private InsertFileType type;
 
+    //remove with .java ect.
     private String name;
 
-    private String path;
+    private String folderPath;
+
+    private String packageName;
+
+    private String fullPath;
+
+    private String qutifiedName;
 
 
-    public InsertFileType getType() {
-        return type;
+    public String getQutifiedName() {
+        return qutifiedName;
     }
 
-    public void setType(InsertFileType type) {
-        this.type = type;
+    public void setQutifiedName(String qutifiedName) {
+        this.qutifiedName = qutifiedName;
     }
 
     public String getName() {
@@ -27,11 +33,28 @@ public class InsertFileProp {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public String getFolderPath() {
+        return folderPath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
+    }
+
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
     }
 }

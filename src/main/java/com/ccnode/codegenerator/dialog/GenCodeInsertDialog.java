@@ -33,6 +33,10 @@ import java.util.Map;
  */
 public class GenCodeInsertDialog extends DialogWrapper {
 
+    private static String JAVA_OFF = ".java";
+
+    private static String XML_OFF = ".xml";
+
     public static final String COLUMNUNIQUE = "unique";
     public static final String FILEDCOLUMN = "filed";
     public static final String COLUMN_NAMECOLUMN = "columnName";
@@ -307,7 +311,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         InsertDialogResult toSeeResult = new InsertDialogResult();
         //just go to set the value.
-        toSeeResult.setSrcClass(psiClass);
         List<GenCodeProp> props = new ArrayList<>();
         for (int i = 0; i < propFields.size(); i++) {
             GenCodeProp prop = new GenCodeProp();
@@ -340,53 +343,63 @@ public class GenCodeInsertDialog extends DialogWrapper {
         }
 
         Path moduleSrc = Paths.get(moduleSrcPath);
-        List<InsertFileProp> insertFileProps = new ArrayList<>();
+        Map<InsertFileType, InsertFileProp> propMap = new HashMap<>();
         if (sqlFileRaidio.isSelected()) {
             InsertFileProp prop = new InsertFileProp();
-            prop.setType(InsertFileType.SQL);
-            prop.setName(sqlNameText.getText());
-            prop.setPath(sqlPathText.getText());
-            insertFileProps.add(prop);
+            String nameText = sqlNameText.getText().trim();
+            prop.setName(nameText);
+            prop.setFolderPath(sqlPathText.getText().trim());
+            prop.setFullPath(prop.getFolderPath() + "/" + nameText);
+            propMap.put(InsertFileType.SQL, prop);
         }
 
         if (daoFileRaidio.isSelected()) {
             InsertFileProp prop = new InsertFileProp();
-            prop.setType(InsertFileType.DAO);
-            prop.setName(daoNameText.getText());
-            prop.setPath(daoPathText.getText());
-            insertFileProps.add(prop);
-
+            String nameText = daoNameText.getText().trim();
+            String daoPath = daoPathText.getText().trim();
+            prop.setFolderPath(daoPath);
+            prop.setFullPath(prop.getFolderPath() + "/" + nameText);
+            prop.setName(nameText.substring(0, nameText.length() - JAVA_OFF.length()));
             //shall combine two path
-            Path relativeToSouce = moduleSrc.relativize(Paths.get(daoPathText.getText()));
+            Path relativeToSouce = moduleSrc.relativize(Paths.get(daoPath));
             String relate = relativeToSouce.toString();
             relate = relate.replace("\\", ".");
             relate = relate.replace("/", ".");
-            toSeeResult.setDaoPackageName(relate);
+            prop.setPackageName(relate);
+            //remove .java ect.
+            prop.setQutifiedName(relate + "." + prop.getName());
+            propMap.put(InsertFileType.DAO, prop);
         }
 
         if (serviceFileRaidio.isSelected()) {
             InsertFileProp prop = new InsertFileProp();
-            prop.setType(InsertFileType.SERVICE);
-            prop.setName(serviceNameText.getText());
-            prop.setPath(servicePathText.getText());
-            insertFileProps.add(prop);
+            String nameText = serviceNameText.getText().trim();
+            prop.setFolderPath(servicePathText.getText().trim());
 
             Path relativeToSouce = moduleSrc.relativize(Paths.get(servicePathText.getText()));
             String relate = relativeToSouce.toString();
             relate = relate.replace("\\", ".");
             relate = relate.replace("/", ".");
-            toSeeResult.setServicePackageName(relate);
+
+            prop.setPackageName(relate);
+            prop.setFullPath(prop.getFolderPath() + "/" + nameText);
+            prop.setName(nameText.substring(0, nameText.length() - JAVA_OFF.length()));
+            //remove .java ect.
+            prop.setQutifiedName(relate + "." + prop.getName());
+
+            propMap.put(InsertFileType.SERVICE, prop);
+
         }
 
         if (mapperFileRaidio.isSelected()) {
             InsertFileProp prop = new InsertFileProp();
-            prop.setType(InsertFileType.MAPPER_XML);
-            prop.setName(mapperNameText.getText());
-            prop.setPath(mapperPathText.getText());
-            insertFileProps.add(prop);
+            prop.setName(mapperNameText.getText().trim());
+            prop.setFolderPath(mapperPathText.getText().trim());
+            prop.setFullPath(prop.getFolderPath() + "/" + prop.getName());
+            propMap.put(InsertFileType.MAPPER_XML, prop);
         }
 
-        toSeeResult.setFileProps(insertFileProps);
+        toSeeResult.setFileProps(propMap);
         toSeeResult.setPropList(props);
         toSeeResult.setTableName(tableNameText.getText());
         this.insertDialogResult = toSeeResult;

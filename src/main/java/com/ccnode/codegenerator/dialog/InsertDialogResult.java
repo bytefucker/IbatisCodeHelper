@@ -1,8 +1,9 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.intellij.psi.PsiClass;
+import com.ccnode.codegenerator.pojo.ClassInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/25.
@@ -12,39 +13,18 @@ public class InsertDialogResult {
 
     private String primaryKey;
 
-    private List<InsertFileProp> fileProps;
+    private Map<InsertFileType,InsertFileProp> fileProps;
 
     private String tableName;
 
-    private String daoPackageName;
+    private ClassInfo srcClass;
 
-    private String servicePackageName;
-
-    private PsiClass srcClass;
-
-
-    public PsiClass getSrcClass() {
+    public ClassInfo getSrcClass() {
         return srcClass;
     }
 
-    public void setSrcClass(PsiClass srcClass) {
+    public void setSrcClass(ClassInfo srcClass) {
         this.srcClass = srcClass;
-    }
-
-    public String getDaoPackageName() {
-        return daoPackageName;
-    }
-
-    public void setDaoPackageName(String daoPackageName) {
-        this.daoPackageName = daoPackageName;
-    }
-
-    public String getServicePackageName() {
-        return servicePackageName;
-    }
-
-    public void setServicePackageName(String servicePackageName) {
-        this.servicePackageName = servicePackageName;
     }
 
     public String getTableName() {
@@ -71,11 +51,11 @@ public class InsertDialogResult {
         this.primaryKey = primaryKey;
     }
 
-    public List<InsertFileProp> getFileProps() {
+    public Map<InsertFileType, InsertFileProp> getFileProps() {
         return fileProps;
     }
 
-    public void setFileProps(List<InsertFileProp> fileProps) {
+    public void setFileProps(Map<InsertFileType, InsertFileProp> fileProps) {
         this.fileProps = fileProps;
     }
 }

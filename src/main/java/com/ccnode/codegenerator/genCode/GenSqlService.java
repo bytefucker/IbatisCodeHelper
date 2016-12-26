@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.genCode;
 
+import com.ccnode.codegenerator.dialog.GenCodeProp;
+import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.pojo.GeneratedFile;
@@ -14,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -324,6 +330,56 @@ public class GenSqlService {
         System.out.println(list.subList(1, 4));
     }
 
+    public static void generateSqlFile(InsertFileProp prop, List<GenCodeProp> propList, String primaryKey, String tableName) {
+        List<String> retList = Lists.newArrayList();
+        String newTableName = GenCodeUtil.wrapComma(tableName);
+        retList.add(String.format("-- auto Generated on %s ", DateUtil.formatLong(new Date())));
+        retList.add("-- DROP TABLE IF EXISTS " + newTableName + "; ");
+        retList.add("CREATE TABLE " + newTableName + "(");
+        for (GenCodeProp field : propList) {
+            String fieldSql = genfieldSql(field);
+            retList.add(fieldSql);
+        }
+        // TODO: 2016/12/26 InnoDb and utf8 can be later configured
+        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey) + ")");
+        retList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", "InnoDB",
+                "utf8", newTableName));
+
+        try {
+            String filePath = prop.getFolderPath() + "/" + prop.getName();
+            Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("can't write file " + prop.getName() + " to path " + prop.getFolderPath() + "/" + prop.getName());
+        }
+        //then go write to the file.
+    }
+
+    private static String genfieldSql(GenCodeProp field) {
+        StringBuilder ret = new StringBuilder();
+        ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.wrapComma(field.getColumnName()))
+                .append(" ").append(field.getFiledType());
+        if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
+            ret.append(" (" + field.getSize() + ")");
+        }
+        if (field.getUnique()) {
+            ret.append(" UNIQUE");
+        }
+        if (!field.getCanBeNull()) {
+            ret.append(" NOT NULL");
+        }
+
+        if (org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
+            ret.append(" DEFAULT " + field.getDefaultValue());
+        }
+
+        if (field.getPrimaryKey()) {
+            ret.append(" AUTO_INCREMENT");
+        }
+
+        ret.append(" COMMENT '" + field.getFieldName() + "'");
+
+        return ret.toString();
+    }
 }
 
 

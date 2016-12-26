@@ -4,6 +4,7 @@ import com.ccnode.codegenerator.dialog.GenCodeDialog;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.genCode.UserConfigService;
 import com.ccnode.codegenerator.pojo.ChangeInfo;
+import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.service.pojo.GenerateInsertCodeService;
 import com.ccnode.codegenerator.util.LoggerWrapper;
@@ -18,6 +19,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -66,8 +68,14 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         } else {
             InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
             //build everything on it.
-            GenerateInsertCodeService.generateInsert(insertDialogResult);
+            ClassInfo info = new ClassInfo();
+            info.setQualifiedName(aClass.getQualifiedName());
+            info.setName(aClass.getName());
 
+            insertDialogResult.setSrcClass(info);
+            GenerateInsertCodeService.generateInsert(insertDialogResult);
+            VirtualFileManager.getInstance().syncRefresh();
+            Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
             return;
         }
 //        GenCodeResponse genCodeResponse = new GenCodeResponse();
@@ -77,7 +85,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
 //                    System.getProperty("file.separator"));
 //            AltInsertInfo insertInfo = new AltInsertInfo();
 //            insertInfo.setSrcClass(aClass);
-//            insertInfo.setPath(file.getVirtualFile().getPath());
+//            insertInfo.setFolderPath(file.getVirtualFile().getFolderPath());
 //            request.setInfo(insertInfo);
 //            request.setProject(project);
 //            genCodeResponse = GenCodeService.genCode(request);
