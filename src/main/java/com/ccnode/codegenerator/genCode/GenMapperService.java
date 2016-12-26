@@ -1,6 +1,8 @@
 package com.ccnode.codegenerator.genCode;
 
 import com.ccnode.codegenerator.constants.MapperConstants;
+import com.ccnode.codegenerator.dialog.GenCodeProp;
+import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.function.EqualCondition;
@@ -468,4 +470,7 @@ public class GenMapperService {
 
     }
 
+    public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName, String primaryKey) {
+
+    }
 }

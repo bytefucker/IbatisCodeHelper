@@ -76,6 +76,8 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
                     insertDialogResult.setSrcClass(info);
 
                     GenerateInsertCodeService.generateInsert(insertDialogResult);
+
+                    // TODO: 2016/12/26 need to make sure message is call after file refresh
                     VirtualFileManager.getInstance().syncRefresh();
                     Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
                     return;

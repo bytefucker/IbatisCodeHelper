@@ -1,14 +1,13 @@
 package com.ccnode.codegenerator.service.pojo;
 
-import com.ccnode.codegenerator.dialog.GenCodeProp;
 import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.dialog.InsertFileType;
 import com.ccnode.codegenerator.genCode.GenDaoService;
+import com.ccnode.codegenerator.genCode.GenMapperService;
+import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
-import com.ccnode.codegenerator.pojo.ClassInfo;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -52,24 +51,15 @@ public class GenerateInsertCodeService {
                 break;
             }
             case MAPPER_XML: {
-                generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryKey());
+                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryKey());
                 break;
             }
             case SERVICE: {
-                generateService(propMap.get(type), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO));
+                GenServiceService.generateService(propMap.get(type), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO));
                 break;
             }
         }
     }
 
-
-    //shall never meet here.
-    private static void generateService(InsertFileProp fileProp, ClassInfo srcClass, InsertFileProp daoProp) {
-
-    }
-
-    private static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName, String primaryKey) {
-
-    }
 
 }

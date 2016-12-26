@@ -1,7 +1,9 @@
 package com.ccnode.codegenerator.genCode;
 
+import com.ccnode.codegenerator.dialog.InsertFileProp;
 import com.ccnode.codegenerator.enums.FileType;
 import com.ccnode.codegenerator.enums.MethodName;
+import com.ccnode.codegenerator.pojo.ClassInfo;
 import com.ccnode.codegenerator.pojo.GenCodeResponse;
 import com.ccnode.codegenerator.pojo.GeneratedFile;
 import com.ccnode.codegenerator.pojo.OnePojoInfo;
@@ -104,6 +106,11 @@ public class GenServiceService {
             newLines.add("}");
             fileInfo.setNewLines(newLines);
         }
+
+    }
+
+    //shall never meet here.
+    public static void generateService(InsertFileProp fileProp, ClassInfo srcClass, InsertFileProp daoProp) {
 
     }
 }
