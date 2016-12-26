@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 /**
  * Created by bruce.ge on 2016/12/25.
@@ -17,10 +16,6 @@ import java.util.List;
 public class GenCodeDialog extends DialogWrapper {
 
     private PsiClass psiClass;
-
-    private List<GenCodeProp> propList;
-
-    private String sqlPath;
 
     private Project myProject;
 
@@ -33,8 +28,6 @@ public class GenCodeDialog extends DialogWrapper {
         myProject = project;
         this.psiClass = psiClass;
         //init with propList.
-        String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
-        sqlPath = psiFileFolderPath;
         setTitle("choose what you wan't to do");
         setOKButtonText("next");
         init();
@@ -58,6 +51,12 @@ public class GenCodeDialog extends DialogWrapper {
             return;
         }
     }
+
+
+    public InsertDialogResult getInsertDialog() {
+        return insertDialog;
+    }
+
 
     @Nullable
     @Override

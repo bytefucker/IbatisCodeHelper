@@ -14,6 +14,26 @@ public class InsertDialogResult {
 
     private String tableName;
 
+    private String daoPackageName;
+
+    private String servicePackageName;
+
+
+    public String getDaoPackageName() {
+        return daoPackageName;
+    }
+
+    public void setDaoPackageName(String daoPackageName) {
+        this.daoPackageName = daoPackageName;
+    }
+
+    public String getServicePackageName() {
+        return servicePackageName;
+    }
+
+    public void setServicePackageName(String servicePackageName) {
+        this.servicePackageName = servicePackageName;
+    }
 
     public String getTableName() {
         return tableName;

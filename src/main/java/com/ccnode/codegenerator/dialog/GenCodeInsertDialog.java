@@ -21,6 +21,8 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +51,9 @@ public class GenCodeInsertDialog extends DialogWrapper {
     private PsiClass psiClass;
 
     private List<GenCodeProp> propList;
+
+
+    private String moduleSrcPath;
 
     private Map<String, String> fieldTypeMap;
 
@@ -281,6 +286,17 @@ public class GenCodeInsertDialog extends DialogWrapper {
     @Override
     protected void doOKAction() {
         //first to check with all data.
+        String qualifiedName = psiClass.getQualifiedName();
+        String[] split = qualifiedName.split("\\.");
+        int splitLength = split.length;
+
+        VirtualFile psiFile = psiClass.getContainingFile().getVirtualFile();
+        while (splitLength > 0) {
+            psiFile = psiFile.getParent();
+            splitLength--;
+        }
+        this.moduleSrcPath = psiFile.getPath();
+
         try {
             validateInput();
         } catch (Exception e) {
@@ -322,6 +338,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
             props.add(prop);
         }
 
+        Path moduleSrc = Paths.get(moduleSrcPath);
         List<InsertFileProp> insertFileProps = new ArrayList<>();
         if (sqlFileRaidio.isSelected()) {
             InsertFileProp prop = new InsertFileProp();
@@ -337,6 +354,13 @@ public class GenCodeInsertDialog extends DialogWrapper {
             prop.setName(daoNameText.getText());
             prop.setPath(daoPathText.getText());
             insertFileProps.add(prop);
+
+            //shall combine two path
+            Path relativeToSouce = moduleSrc.relativize(Paths.get(daoPathText.getText()));
+            String relate = relativeToSouce.toString();
+            relate = relate.replace("\\", ".");
+            relate = relate.replace("/", ".");
+            toSeeResult.setDaoPackageName(relate);
         }
 
         if (serviceFileRaidio.isSelected()) {
@@ -345,6 +369,12 @@ public class GenCodeInsertDialog extends DialogWrapper {
             prop.setName(serviceNameText.getText());
             prop.setPath(servicePathText.getText());
             insertFileProps.add(prop);
+
+            Path relativeToSouce = moduleSrc.relativize(Paths.get(servicePathText.getText()));
+            String relate = relativeToSouce.toString();
+            relate = relate.replace("\\", ".");
+            relate = relate.replace("/", ".");
+            toSeeResult.setServicePackageName(relate);
         }
 
         if (mapperFileRaidio.isSelected()) {
@@ -363,26 +393,32 @@ public class GenCodeInsertDialog extends DialogWrapper {
     }
 
     private void validateInput() {
+        //
+        Path moduleSrc = Paths.get(this.moduleSrcPath);
         Validate.notBlank(tableNameText.getText(), "table name is empty");
         if (sqlFileRaidio.isSelected()) {
             Validate.notBlank(sqlNameText.getText(), "sql name is empty");
             Validate.notBlank(sqlPathText.getText(), "sql path is empty");
         }
 
+        if (mapperFileRaidio.isSelected()) {
+            Validate.isTrue(daoFileRaidio.isSelected(), "you shall select with dao file to generate");
+            Validate.notBlank(mapperNameText.getText(), "mapper name is empty");
+            Validate.notBlank(mapperPathText.getText(), "mapper path is empty");
+        }
+
         if (daoFileRaidio.isSelected()) {
             Validate.notBlank(daoNameText.getText(), "dao name is empty");
             Validate.notBlank(daoPathText.getText(), "dao path is empty");
+            Validate.isTrue(Paths.get(daoPathText.getText()).startsWith(moduleSrc), "your dao path shall be under " + this.moduleSrcPath);
         }
 
         if (serviceFileRaidio.isSelected()) {
             Validate.notBlank(serviceNameText.getText(), "service name is empty");
             Validate.notBlank(servicePathText.getText(), "service path is empty");
+            Validate.isTrue(Paths.get(servicePathText.getText()).startsWith(moduleSrc), "your service path shall be under " + this.moduleSrcPath);
         }
 
-        if (mapperFileRaidio.isSelected()) {
-            Validate.notBlank(mapperNameText.getText(), "mapper name is empty");
-            Validate.notBlank(mapperPathText.getText(), "mapper path is empty");
-        }
 
         for (int i = 0; i < propFields.size(); i++) {
             Object valueAt = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
