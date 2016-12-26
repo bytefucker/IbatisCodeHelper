@@ -33,6 +33,13 @@ public class GenCodeDialog extends DialogWrapper {
         init();
     }
 
+    public GenCodeType getType() {
+        return type;
+    }
+
+    public void setType(GenCodeType type) {
+        this.type = type;
+    }
 
     @Override
     protected void doOKAction() {

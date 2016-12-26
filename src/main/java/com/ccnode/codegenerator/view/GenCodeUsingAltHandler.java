@@ -66,17 +66,25 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         if (!b) {
             return;
         } else {
-            InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
-            //build everything on it.
-            ClassInfo info = new ClassInfo();
-            info.setQualifiedName(aClass.getQualifiedName());
-            info.setName(aClass.getName());
+            switch (genCodeDialog.getType()){
+                case INSERT:{
+                    InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
+                    //build everything on it.
+                    ClassInfo info = new ClassInfo();
+                    info.setQualifiedName(aClass.getQualifiedName());
+                    info.setName(aClass.getName());
+                    insertDialogResult.setSrcClass(info);
 
-            insertDialogResult.setSrcClass(info);
-            GenerateInsertCodeService.generateInsert(insertDialogResult);
-            VirtualFileManager.getInstance().syncRefresh();
-            Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
-            return;
+                    GenerateInsertCodeService.generateInsert(insertDialogResult);
+                    VirtualFileManager.getInstance().syncRefresh();
+                    Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
+                    return;
+                }
+                case UPDATE:{
+                    //do for update.
+                }
+            }
+
         }
 //        GenCodeResponse genCodeResponse = new GenCodeResponse();
 //        GenCodeResponseHelper.setResponse(genCodeResponse);
