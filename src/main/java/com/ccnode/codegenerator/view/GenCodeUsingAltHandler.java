@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.view;
 
 import com.ccnode.codegenerator.dialog.GenCodeDialog;
+import com.ccnode.codegenerator.dialog.InsertDialogResult;
 import com.ccnode.codegenerator.genCode.GenCodeService;
 import com.ccnode.codegenerator.genCode.UserConfigService;
 import com.ccnode.codegenerator.pojo.AltInsertInfo;
@@ -68,6 +69,10 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         boolean b = genCodeDialog.showAndGet();
         if (!b) {
             return;
+        } else {
+            InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
+            //build everything on it.
+
         }
         GenCodeResponse genCodeResponse = new GenCodeResponse();
         GenCodeResponseHelper.setResponse(genCodeResponse);

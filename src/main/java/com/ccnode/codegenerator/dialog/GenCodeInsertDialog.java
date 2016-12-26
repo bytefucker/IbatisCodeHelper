@@ -307,6 +307,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         InsertDialogResult toSeeResult = new InsertDialogResult();
         //just go to set the value.
+        toSeeResult.setSrcClass(psiClass);
         List<GenCodeProp> props = new ArrayList<>();
         for (int i = 0; i < propFields.size(); i++) {
             GenCodeProp prop = new GenCodeProp();

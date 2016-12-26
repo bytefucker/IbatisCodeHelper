@@ -1,5 +1,7 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.intellij.psi.PsiClass;
+
 import java.util.List;
 
 /**
@@ -18,6 +20,16 @@ public class InsertDialogResult {
 
     private String servicePackageName;
 
+    private PsiClass srcClass;
+
+
+    public PsiClass getSrcClass() {
+        return srcClass;
+    }
+
+    public void setSrcClass(PsiClass srcClass) {
+        this.srcClass = srcClass;
+    }
 
     public String getDaoPackageName() {
         return daoPackageName;

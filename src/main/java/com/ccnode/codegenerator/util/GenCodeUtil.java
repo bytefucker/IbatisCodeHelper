@@ -133,6 +133,11 @@ public class GenCodeUtil {
     }
 
 
+    public static String wrapComma(String value) {
+        return "`" + value + "``";
+    }
+
+
     public static String getUnderScore(String value) {
         if (value == null) {
             return StringUtils.EMPTY;

@@ -21,7 +21,7 @@ public class GenCodeDialog extends DialogWrapper {
 
     private GenCodeType type = GenCodeType.INSERT;
 
-    private InsertDialogResult insertDialog;
+    private InsertDialogResult insertDialogResult;
 
     public GenCodeDialog(Project project, PsiClass psiClass) {
         super(project, true);
@@ -43,7 +43,7 @@ public class GenCodeDialog extends DialogWrapper {
                 return;
             } else {
                 //get the result of it.
-                insertDialog = genCodeInsertDialog.getInsertDialogResult();
+                insertDialogResult = genCodeInsertDialog.getInsertDialogResult();
                 super.doOKAction();
             }
         } else if (type == GenCodeType.UPDATE) {
@@ -53,8 +53,8 @@ public class GenCodeDialog extends DialogWrapper {
     }
 
 
-    public InsertDialogResult getInsertDialog() {
-        return insertDialog;
+    public InsertDialogResult getInsertDialogResult() {
+        return insertDialogResult;
     }
 
 
