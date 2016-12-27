@@ -66,15 +66,14 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
         if (!b) {
             return;
         } else {
-            switch (genCodeDialog.getType()){
-                case INSERT:{
+            ClassInfo info = new ClassInfo();
+            info.setQualifiedName(aClass.getQualifiedName());
+            info.setName(aClass.getName());
+            switch (genCodeDialog.getType()) {
+                case INSERT: {
                     InsertDialogResult insertDialogResult = genCodeDialog.getInsertDialogResult();
                     //build everything on it.
-                    ClassInfo info = new ClassInfo();
-                    info.setQualifiedName(aClass.getQualifiedName());
-                    info.setName(aClass.getName());
                     insertDialogResult.setSrcClass(info);
-
                     GenerateInsertCodeService.generateInsert(insertDialogResult);
 
                     // TODO: 2016/12/26 need to make sure message is call after file refresh
@@ -82,7 +81,7 @@ public class GenCodeUsingAltHandler implements CodeInsightActionHandler {
                     Messages.showMessageDialog(project, "generate files success", "hehe", Messages.getInformationIcon());
                     return;
                 }
-                case UPDATE:{
+                case UPDATE: {
                     //do for update.
                 }
             }

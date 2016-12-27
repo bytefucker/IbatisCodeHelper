@@ -8,6 +8,8 @@ import com.ccnode.codegenerator.genCode.GenMapperService;
 import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -21,11 +23,15 @@ public class GenerateInsertCodeService {
     public static void generateInsert(InsertDialogResult insertDialogResult) {
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
         ExecutorService executorService = Executors.newFixedThreadPool(fileProps.size());
+        List<String> errorMsgs = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(fileProps.size());
         for (InsertFileType fileType : fileProps.keySet()) {
             executorService.submit(() -> {
                 try {
                     generateFiles(fileType, fileProps, insertDialogResult);
+                    //need to catch with exception.
+                } catch (Exception e) {
+                    errorMsgs.add(e.getMessage());
                 } finally {
                     latch.countDown();
                 }
