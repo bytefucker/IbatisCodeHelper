@@ -476,7 +476,7 @@ public class GenMapperService {
 
     }
 
-    public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName,GenCodeProp primaryProp) {
+    public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName, GenCodeProp primaryProp) {
         List<String> retList = Lists.newArrayList();
         retList.add("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
         retList.add("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\" >");
@@ -486,7 +486,10 @@ public class GenMapperService {
         retList.addAll(genAllColumn(props));
         retList.addAll(genInsertMethod(props, tableName));
         retList.addAll(genInsertsMethod(props, tableName));
-        retList.addAll(genUpdateMethod(props, tableName,primaryProp));
+        retList.addAll(genUpdateMethod(props, tableName, primaryProp));
+        retList.add("</mapper>");
+
+
         try {
             String filePath = fileProp.getFullPath();
             Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -495,7 +498,7 @@ public class GenMapperService {
         }
     }
 
-    private static Collection<? extends String> genUpdateMethod(List<GenCodeProp> props, String tableName,GenCodeProp primaryProp) {
+    private static Collection<? extends String> genUpdateMethod(List<GenCodeProp> props, String tableName, GenCodeProp primaryProp) {
         List<String> retList = Lists.newArrayList();
         retList.add(AUTO_GENERATED_CODE);
 
@@ -514,7 +517,7 @@ public class GenMapperService {
             index++;
         }
         retList.add(GenCodeUtil.TWO_RETRACT + "</set>");
-        retList.add(GenCodeUtil.TWO_RETRACT + String.format(" WHERE %s = #{pojo.%s}",GenCodeUtil.wrapComma(primaryProp.getColumnName()),primaryProp.getFieldName()));
+        retList.add(GenCodeUtil.TWO_RETRACT + String.format(" WHERE %s = #{pojo.%s}", GenCodeUtil.wrapComma(primaryProp.getColumnName()), primaryProp.getFieldName()));
         retList.add(GenCodeUtil.ONE_RETRACT + "</update>");
         retList.add(StringUtils.EMPTY);
         return retList;
@@ -531,13 +534,12 @@ public class GenMapperService {
         retList.add(GenCodeUtil.THREE_RETRACT + "(");
 
         for (int i = 0; i < props.size(); i++) {
-            String s = GenCodeUtil.THREE_RETRACT + String.format("#{pojo.%s},", props.get(i).getFieldName());
+            String s = GenCodeUtil.THREE_RETRACT + String.format("#{pojo.%s}", props.get(i).getFieldName());
             if (i != props.size() - 1) {
                 s += COMMA;
             }
             retList.add(s);
         }
-        retList.add(StringUtils.EMPTY);
         retList.add(GenCodeUtil.THREE_RETRACT + ")");
         retList.add(GenCodeUtil.TWO_RETRACT + "</foreach>");
         retList.add(GenCodeUtil.ONE_RETRACT + "</insert>");
@@ -584,6 +586,7 @@ public class GenMapperService {
             retList.add(s);
         }
         retList.add(GenCodeUtil.ONE_RETRACT + "</sql>");
+        retList.add(StringUtils.EMPTY);
         return retList;
     }
 
