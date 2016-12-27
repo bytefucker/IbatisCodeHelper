@@ -153,7 +153,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         myProject = project;
         this.psiClass = psiClass;
 
-        this.propFields = PsiClassUtil.buildPropMap(psiClass);
+        this.propFields = PsiClassUtil.buildPropFieldInfo(psiClass);
 
         this.fieldTypeMap = extractMap(propFields);
 

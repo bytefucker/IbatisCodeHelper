@@ -63,7 +63,7 @@ public class PsiClassUtil {
         return null;
     }
 
-    public static List<ClassFieldInfo> buildPropMap(PsiClass psiClass) {
+    public static List<ClassFieldInfo> buildPropFieldInfo(PsiClass psiClass) {
         List<ClassFieldInfo> lists = new ArrayList<>();
         PsiField[] allFields = psiClass.getAllFields();
         for (PsiField psiField : allFields) {

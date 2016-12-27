@@ -54,8 +54,14 @@ public class GenCodeDialog extends DialogWrapper {
                 super.doOKAction();
             }
         } else if (type == GenCodeType.UPDATE) {
-            System.out.println("gonna update");
-            return;
+            GenCodeUpdateDialog updateDialog = new GenCodeUpdateDialog(myProject, psiClass);
+            boolean b = updateDialog.showAndGet();
+            if (!b) {
+                return;
+            } else {
+                //extract the result from it.
+                super.doOKAction();
+            }
         }
     }
 
