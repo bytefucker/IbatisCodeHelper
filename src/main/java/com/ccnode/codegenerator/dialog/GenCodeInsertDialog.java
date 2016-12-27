@@ -331,14 +331,15 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
             Object primary = propTable.getValueAt(i, PRIMARYCOLUMNINDEX);
             prop.setPrimaryKey(formatBoolean(primary));
-            if (prop.getPrimaryKey()) {
-                toSeeResult.setPrimaryKey(prop.getColumnName());
-            }
+
             Object canbenull = propTable.getValueAt(i, CANBENULLCOLUMNINDEX);
             prop.setCanBeNull(formatBoolean(canbenull));
 
             Object defaultValue = propTable.getValueAt(i, DEFAULT_VALUECOLUMNINDEX);
             prop.setDefaultValue(formatString(defaultValue));
+            if (prop.getPrimaryKey()) {
+                toSeeResult.setPrimaryProp(prop);
+            }
             props.add(prop);
         }
 

@@ -50,7 +50,7 @@ public class GenerateInsertCodeService {
     private static void generateFiles(InsertFileType type, Map<InsertFileType, InsertFileProp> propMap, InsertDialogResult insertDialogResult) {
         switch (type) {
             case SQL: {
-                GenSqlService.generateSqlFile(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getPrimaryKey(), insertDialogResult.getTableName());
+                GenSqlService.generateSqlFile(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getPrimaryProp(), insertDialogResult.getTableName());
                 break;
             }
             case DAO: {
@@ -58,7 +58,7 @@ public class GenerateInsertCodeService {
                 break;
             }
             case MAPPER_XML: {
-                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName());
+                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(),insertDialogResult.getPrimaryProp());
                 break;
             }
             case SERVICE: {

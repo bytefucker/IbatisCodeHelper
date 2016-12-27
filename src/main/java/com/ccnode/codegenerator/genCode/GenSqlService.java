@@ -54,7 +54,7 @@ public class GenSqlService {
             fileInfo.setNewLines(newLines);
             return;
         }
-        if(canReplace){
+        if (canReplace) {
             List<String> newLines = replaceSql(onePojoInfo, fileInfo, response);
             fileInfo.setNewLines(newLines);
             return;
@@ -106,7 +106,7 @@ public class GenSqlService {
         int oldIndex = findFirstFieldPos(oldList);
         for (PojoFieldInfo fieldInfo : onePojoInfo.getPojoFieldInfos()) {
             if (oldSqlContainField(oldList, fieldInfo)) {
-                oldList = updateSqlComment(oldList, fieldInfo,response);
+                oldList = updateSqlComment(oldList, fieldInfo, response);
                 oldIndex++;
                 continue;
             }
@@ -118,14 +118,14 @@ public class GenSqlService {
         String tableName = GenCodeUtil.getUnderScoreWithComma(onePojoInfo.getPojoClassSimpleName());
         oldList = PojoUtil.avoidEmptyList(oldList);
         for (String line : oldList) {
-            if(GenCodeUtil.sqlContain(line, ")ENGINE=")){
+            if (GenCodeUtil.sqlContain(line, ")ENGINE=")) {
                 replaceList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", getSqlEngine(response), getSqlCharSet(response), tableName));
-            }else{
+            } else {
                 replaceList.add(line);
             }
 
         }
-        oldList = removeDeleteField(onePojoInfo.getPojoFieldInfos(),replaceList);
+        oldList = removeDeleteField(onePojoInfo.getPojoFieldInfos(), replaceList);
 
         return Lists.newArrayList(oldList);
 
@@ -136,19 +136,19 @@ public class GenSqlService {
         List<String> retList = Lists.newArrayList();
 
         for (String line : oldList) {
-            String prefix = RegexUtil.getMatch("^[\\s]*`.+`",line);
-            if(StringUtils.isNotBlank(prefix)){
+            String prefix = RegexUtil.getMatch("^[\\s]*`.+`", line);
+            if (StringUtils.isNotBlank(prefix)) {
                 Boolean containField = false;
                 for (PojoFieldInfo pojoFieldInfo : pojoFieldInfos) {
                     String fieldName = GenCodeUtil.getUnderScoreWithComma(pojoFieldInfo.getFieldName());
-                    if(prefix.contains(fieldName)){
+                    if (prefix.contains(fieldName)) {
                         containField = true;
                     }
                 }
-                if(containField){
+                if (containField) {
                     retList.add(line);
                 }
-            }else{
+            } else {
                 retList.add(line);
             }
         }
@@ -156,24 +156,24 @@ public class GenSqlService {
     }
 
     private static List<String> updateSqlComment(@NotNull List<String> oldList, @NotNull PojoFieldInfo fieldInfo,
-            GenCodeResponse response) {
+                                                 GenCodeResponse response) {
         String keyWord = "`" + GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName()) + "`";
         List<String> retList = Lists.newArrayList();
         for (String s : oldList) {
-            if (s.contains(keyWord)){
+            if (s.contains(keyWord)) {
                 String match = RegexUtil.getMatch("COMMENT[\\s]*'(.*)',", s);
-                if(StringUtils.isNotBlank(match)){
+                if (StringUtils.isNotBlank(match)) {
                     String comment = getFieldComment(response, fieldInfo);
                     String newComment = "COMMENT '" + comment + "',";
-                    if(Objects.equal(newComment,match)){
+                    if (Objects.equal(newComment, match)) {
                         return oldList;
                     }
-                    String replaced = s.replace(match,newComment);
+                    String replaced = s.replace(match, newComment);
                     retList.add(replaced);
-                }else{
+                } else {
                     retList.add(s);
                 }
-            }else{
+            } else {
                 retList.add(s);
             }
         }
@@ -183,7 +183,7 @@ public class GenSqlService {
     private static boolean oldSqlContainField(@NotNull List<String> oldList, @NotNull PojoFieldInfo fieldInfo) {
         String keyWord = GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName());
         for (String s : oldList) {
-            if (s.contains(keyWord)){
+            if (s.contains(keyWord)) {
                 return true;
             }
         }
@@ -209,17 +209,17 @@ public class GenSqlService {
         return index;
     }
 
-    public static String getComment(GenCodeResponse response, String fieldName){
+    public static String getComment(GenCodeResponse response, String fieldName) {
         String language = response.getUserConfigMap().get("language");
-        if(StringUtils.isBlank(language) || language.equals("EN")){
+        if (StringUtils.isBlank(language) || language.equals("EN")) {
             return fieldName;
         }
-        Map<String,String> commentMap = Maps.newHashMap();
-        commentMap.put("lastUpdate","最后更新时间");
-        commentMap.put("updateTime","更新时间");
-        commentMap.put("createTime","创建时间");
-        commentMap.put("id","主键");
-        return StringUtils.defaultIfEmpty(commentMap.get(fieldName),fieldName);
+        Map<String, String> commentMap = Maps.newHashMap();
+        commentMap.put("lastUpdate", "最后更新时间");
+        commentMap.put("updateTime", "更新时间");
+        commentMap.put("createTime", "创建时间");
+        commentMap.put("id", "主键");
+        return StringUtils.defaultIfEmpty(commentMap.get(fieldName), fieldName);
     }
 
     private static String genfieldSql(@NotNull PojoFieldInfo fieldInfo, GenCodeResponse response) {
@@ -227,27 +227,27 @@ public class GenSqlService {
 
         if (fieldInfo.getFieldName().equalsIgnoreCase("lastUpdate")) {
             ret.append(GenCodeUtil.ONE_RETRACT)
-                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '"+getFieldComment(response,fieldInfo)+"',");
+                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '" + getFieldComment(response, fieldInfo) + "',");
             return ret.toString();
         }
         if (fieldInfo.getFieldName().equalsIgnoreCase("updateTime")) {
             ret.append(GenCodeUtil.ONE_RETRACT)
-                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '"+getFieldComment(response,fieldInfo)+"',");
+                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '" + getFieldComment(response, fieldInfo) + "',");
             return ret.toString();
         }
 
         if (fieldInfo.getFieldName().equalsIgnoreCase("createTime")) {
             ret.append(GenCodeUtil.ONE_RETRACT)
-                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" DATETIME NOT NULL DEFAULT '1001-01-01 00:00:00' COMMENT '"+getFieldComment(response,fieldInfo)+"',");
+                    .append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" DATETIME NOT NULL DEFAULT '1001-01-01 00:00:00' COMMENT '" + getFieldComment(response, fieldInfo) + "',");
             return ret.toString();
         }
 
         if (fieldInfo.getFieldName().equals("id")) {
             String append = new StringBuilder().append(GenCodeUtil.ONE_RETRACT).
-                    append("`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '"+getFieldComment(response,fieldInfo)+"',").toString();
-            if(fieldInfo.getFieldClass().equals("Integer")
-                    || fieldInfo.getFieldClass().equals("int")){
-                append = append.replace("BIGINT(20)","INTEGER(20)");
+                    append("`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '" + getFieldComment(response, fieldInfo) + "',").toString();
+            if (fieldInfo.getFieldClass().equals("Integer")
+                    || fieldInfo.getFieldClass().equals("int")) {
+                append = append.replace("BIGINT(20)", "INTEGER(20)");
             }
             ret.append(append);
             return ret.toString();
@@ -255,7 +255,7 @@ public class GenSqlService {
 
         String filedClassDefault = getDefaultField(fieldInfo, response);
         ret.append(GenCodeUtil.ONE_RETRACT).append(GenCodeUtil.getUnderScoreWithComma(fieldInfo.getFieldName())).append(" ")
-                .append(filedClassDefault).append(" COMMENT '").append(getFieldComment(response,fieldInfo)).append("',");
+                .append(filedClassDefault).append(" COMMENT '").append(getFieldComment(response, fieldInfo)).append("',");
         return ret.toString();
     }
 
@@ -263,20 +263,20 @@ public class GenSqlService {
     private static String getFieldComment(GenCodeResponse response, PojoFieldInfo fieldInfo) {
 
         String language = response.getUserConfigMap().get("language");
-        Map<String,String> commentMap = Maps.newHashMap();
-        commentMap.put("lastUpdate","最后更新时间");
-        commentMap.put("updateTime","更新时间");
-        commentMap.put("createTime","创建时间");
-        commentMap.put("id","主键");
-        if(commentMap.get(fieldInfo.getFieldName()) != null){
-            if(StringUtils.isBlank(language) || StringUtils.equalsIgnoreCase(language,"EN")){
+        Map<String, String> commentMap = Maps.newHashMap();
+        commentMap.put("lastUpdate", "最后更新时间");
+        commentMap.put("updateTime", "更新时间");
+        commentMap.put("createTime", "创建时间");
+        commentMap.put("id", "主键");
+        if (commentMap.get(fieldInfo.getFieldName()) != null) {
+            if (StringUtils.isBlank(language) || StringUtils.equalsIgnoreCase(language, "EN")) {
                 return fieldInfo.getFieldName();
-            }else{
+            } else {
                 return commentMap.get(fieldInfo.getFieldName());
             }
         }
 
-        if(StringUtils.isNotBlank(fieldInfo.getFieldComment())){
+        if (StringUtils.isNotBlank(fieldInfo.getFieldComment())) {
             return fieldInfo.getFieldComment();
         }
         return fieldInfo.getFieldName();
@@ -287,24 +287,24 @@ public class GenSqlService {
         String key = fieldInfo.getFieldClass().toLowerCase();
         String value = userConfigMap.get(key);
         if (StringUtils.isBlank(value)) {
-            if(StringUtils.equalsIgnoreCase(key,"String")){
+            if (StringUtils.equalsIgnoreCase(key, "String")) {
                 return "VARCHAR(50) NOT NULL DEFAULT ''";
-            }else if(StringUtils.equalsIgnoreCase(key,"Integer")
-                    || StringUtils.equalsIgnoreCase(key,"int")){
+            } else if (StringUtils.equalsIgnoreCase(key, "Integer")
+                    || StringUtils.equalsIgnoreCase(key, "int")) {
                 return "INTEGER(12) NOT NULL DEFAULT -1";
-            }else if(StringUtils.equalsIgnoreCase(key,"short")){
+            } else if (StringUtils.equalsIgnoreCase(key, "short")) {
                 return "TINYINT NOT NULL DEFAULT -1";
-            }else if(StringUtils.equalsIgnoreCase(key,"date")){
+            } else if (StringUtils.equalsIgnoreCase(key, "date")) {
                 return "DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00'";
-            }else if(StringUtils.equalsIgnoreCase(key,"Long")){
+            } else if (StringUtils.equalsIgnoreCase(key, "Long")) {
                 return "BIGINT NOT NULL DEFAULT -1";
-            }else if(StringUtils.equalsIgnoreCase(key,"BigDecimal")){
+            } else if (StringUtils.equalsIgnoreCase(key, "BigDecimal")) {
                 return "DECIMAL(14,4) NOT NULL DEFAULT 0";
-            }else if(StringUtils.equalsIgnoreCase(key,"double")){
+            } else if (StringUtils.equalsIgnoreCase(key, "double")) {
                 return "DECIMAL(14,4) NOT NULL DEFAULT 0";
-            }else if(StringUtils.equalsIgnoreCase(key,"float")){
+            } else if (StringUtils.equalsIgnoreCase(key, "float")) {
                 return "DECIMAL(14,4) NOT NULL DEFAULT 0";
-            }else {
+            } else {
                 throw new RuntimeException("unSupport field type :" + fieldInfo.getFieldClass());
             }
         }
@@ -317,7 +317,7 @@ public class GenSqlService {
 
         String s = "ULT '' COMMENTff'联系人电话',";
         Matcher matcher = commentPattern.matcher(s);
-        if(matcher.find()){
+        if (matcher.find()) {
             String m = matcher.group();
             System.out.println(m);
         }
@@ -330,7 +330,7 @@ public class GenSqlService {
         System.out.println(list.subList(1, 4));
     }
 
-    public static void generateSqlFile(InsertFileProp prop, List<GenCodeProp> propList, String primaryKey, String tableName) {
+    public static void generateSqlFile(InsertFileProp prop, List<GenCodeProp> propList, GenCodeProp primaryKey, String tableName) {
         List<String> retList = Lists.newArrayList();
         String newTableName = GenCodeUtil.wrapComma(tableName);
         retList.add(String.format("-- auto Generated on %s ", DateUtil.formatLong(new Date())));
@@ -341,7 +341,7 @@ public class GenSqlService {
             retList.add(fieldSql);
         }
         // TODO: 2016/12/26 InnoDb and utf8 can be later configured
-        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey) + ")");
+        retList.add(GenCodeUtil.ONE_RETRACT + "PRIMARY KEY (" + GenCodeUtil.wrapComma(primaryKey.getColumnName()) + ")");
         retList.add(String.format(")ENGINE=%s DEFAULT CHARSET=%s COMMENT '%s';", "InnoDB",
                 "utf8", newTableName));
 

@@ -11,9 +11,8 @@ import java.util.Map;
 public class InsertDialogResult {
     private List<GenCodeProp> propList;
 
-    private String primaryKey;
-
-    private Map<InsertFileType,InsertFileProp> fileProps;
+    private GenCodeProp primaryProp;
+    private Map<InsertFileType, InsertFileProp> fileProps;
 
     private String tableName;
 
@@ -43,12 +42,12 @@ public class InsertDialogResult {
         this.propList = propList;
     }
 
-    public String getPrimaryKey() {
-        return primaryKey;
+    public GenCodeProp getPrimaryProp() {
+        return primaryProp;
     }
 
-    public void setPrimaryKey(String primaryKey) {
-        this.primaryKey = primaryKey;
+    public void setPrimaryProp(GenCodeProp primaryProp) {
+        this.primaryProp = primaryProp;
     }
 
     public Map<InsertFileType, InsertFileProp> getFileProps() {

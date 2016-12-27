@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.List;
 
@@ -472,7 +476,7 @@ public class GenMapperService {
 
     }
 
-    public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName) {
+    public static void generateMapperXml(InsertFileProp fileProp, List<GenCodeProp> props, ClassInfo srcClass, InsertFileProp daoProp, String tableName,GenCodeProp primaryProp) {
         List<String> retList = Lists.newArrayList();
         retList.add("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
         retList.add("<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\" >");
@@ -481,6 +485,64 @@ public class GenMapperService {
         retList.addAll(genAllColumnMap(props, srcClass.getQualifiedName()));
         retList.addAll(genAllColumn(props));
         retList.addAll(genInsertMethod(props, tableName));
+        retList.addAll(genInsertsMethod(props, tableName));
+        retList.addAll(genUpdateMethod(props, tableName,primaryProp));
+        try {
+            String filePath = fileProp.getFullPath();
+            Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("can't write file " + fileProp.getName() + " to path " + fileProp.getFullPath());
+        }
+    }
+
+    private static Collection<? extends String> genUpdateMethod(List<GenCodeProp> props, String tableName,GenCodeProp primaryProp) {
+        List<String> retList = Lists.newArrayList();
+        retList.add(AUTO_GENERATED_CODE);
+
+        retList.add(GenCodeUtil.ONE_RETRACT + "<update id=\"" + MethodName.update.name() + "\">");
+        retList.add(GenCodeUtil.TWO_RETRACT + "UPDATE " + GenCodeUtil.wrapComma(tableName));
+        retList.add(GenCodeUtil.TWO_RETRACT + "<set>");
+        int index = 0;
+        for (GenCodeProp fieldInfo : props) {
+            String fieldName = fieldInfo.getFieldName();
+            String testCondition = GenCodeUtil.THREE_RETRACT + String.format("<if test=\"pojo.%s != null\">", fieldName);
+            String updateField = String.format("%s = #{pojo.%s},", GenCodeUtil.wrapComma(fieldInfo.getColumnName()), fieldName);
+            if (index == props.size() - 1) {
+                updateField = updateField.replace(COMMA, StringUtils.EMPTY);
+            }
+            retList.add(testCondition + " " + updateField + " </if>");
+            index++;
+        }
+        retList.add(GenCodeUtil.TWO_RETRACT + "</set>");
+        retList.add(GenCodeUtil.TWO_RETRACT + String.format(" WHERE %s = #{pojo.%s}",GenCodeUtil.wrapComma(primaryProp.getColumnName()),primaryProp.getFieldName()));
+        retList.add(GenCodeUtil.ONE_RETRACT + "</update>");
+        retList.add(StringUtils.EMPTY);
+        return retList;
+    }
+
+    private static Collection<? extends String> genInsertsMethod(List<GenCodeProp> props, String tableName) {
+        List<String> retList = Lists.newArrayList();
+        retList.add(AUTO_GENERATED_CODE);
+        retList.add(GenCodeUtil.ONE_RETRACT + "<insert id=\"" + MethodName.insertList.name() + "\">");
+        retList.add(GenCodeUtil.TWO_RETRACT + "INSERT INTO " + GenCodeUtil.wrapComma(tableName) + "(");
+        retList.add(GenCodeUtil.TWO_RETRACT + "<include refid=\"" + MapperConstants.ALL_COLUMN + "\"/>");
+        retList.add(GenCodeUtil.TWO_RETRACT + ")VALUES");
+        retList.add(GenCodeUtil.TWO_RETRACT + "<foreach collection=\"pojos\" item=\"pojo\" index=\"index\" separator=\",\">");
+        retList.add(GenCodeUtil.THREE_RETRACT + "(");
+
+        for (int i = 0; i < props.size(); i++) {
+            String s = GenCodeUtil.THREE_RETRACT + String.format("#{pojo.%s},", props.get(i).getFieldName());
+            if (i != props.size() - 1) {
+                s += COMMA;
+            }
+            retList.add(s);
+        }
+        retList.add(StringUtils.EMPTY);
+        retList.add(GenCodeUtil.THREE_RETRACT + ")");
+        retList.add(GenCodeUtil.TWO_RETRACT + "</foreach>");
+        retList.add(GenCodeUtil.ONE_RETRACT + "</insert>");
+        retList.add(StringUtils.EMPTY);
+        return retList;
     }
 
     private static Collection<? extends String> genInsertMethod(List<GenCodeProp> props, String tableName) {
