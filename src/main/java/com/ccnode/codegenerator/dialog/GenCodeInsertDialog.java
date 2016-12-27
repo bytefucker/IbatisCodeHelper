@@ -17,7 +17,6 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,20 +35,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
     private static String JAVA_OFF = ".java";
 
     private static String XML_OFF = ".xml";
-
-    public static final String COLUMNUNIQUE = "unique";
-    public static final String FILEDCOLUMN = "filed";
-    public static final String COLUMN_NAMECOLUMN = "columnName";
-
-    public static final String TYPECOLUMN = "type";
-
-    public static final String PRIMARYCOLUMN = "primary";
-
-    public static final String LENGTHCOLUMN = "length";
-
-    public static final String CANBENULLCOLUMN = "canBeNull";
-
-    public static final String DEFAULT_VALUE_COLUMN = "defaultValue";
 
 
     private PsiClass psiClass;
@@ -91,20 +76,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
     private JButton daoOpenFolder = new JButton("open folder");
 
     private JTextField daoNameText;
-
-    private static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
-
-    private static final int FIELDCOLUMNINDEX = 0;
-
-    private static final int COLUMN_NAMECOLUMNINDEX = 1;
-
-    private static final int TYPECOLUMNINDEX = 2;
-    private static final int LENGTHCOLUMNINDEX = 3;
-    private static final int UNIQUECOLUMNINDEX = 4;
-    private static final int PRIMARYCOLUMNINDEX = 5;
-    private static final int CANBENULLCOLUMNINDEX = 6;
-
-    private static final int DEFAULT_VALUECOLUMNINDEX = 7;
 
     private JTextField daoPathText;
 
@@ -163,7 +134,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
         }
         //gonna construct all the values for the table.
 
-        Object[][] propData = getDatas(propFields, columnNames.length);
+        Object[][] propData = MyJTable.getDatas(propFields);
         //init with propList.
         String psiFileFolderPath = psiClass.getContainingFile().getVirtualFile().getParent().getPath();
         String className = psiClass.getName();
@@ -183,60 +154,10 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         daoNameText = new JTextField(className + "Dao.java");
 
-        propTable = new JTable(propData, columnNames) {
-            @Override
-            public Dimension getPreferredScrollableViewportSize() {
-                int headerHeight = propTable.getTableHeader().getPreferredSize().height;
-                int height = headerHeight + (10 * getRowHeight());
-                int width = getPreferredSize().width;
-                return new Dimension(width, height);
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column != 0;
-            }
-
-            @Override
-            public void setValueAt(Object aValue, int row, int column) {
-                // TODO: 2016/12/26 could do better not using getColumn.
-                super.setValueAt(aValue, row, column);
-                if (column == TYPECOLUMNINDEX) {
-                    TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);
-                    if (typeDefault == null) {
-                        super.setValueAt(null, row, LENGTHCOLUMNINDEX);
-                        super.setValueAt(null, row, DEFAULT_VALUECOLUMNINDEX);
-                    } else {
-                        super.setValueAt(typeDefault.getSize(), row, LENGTHCOLUMNINDEX);
-                        super.setValueAt(typeDefault.getDefaultValue(), row, DEFAULT_VALUECOLUMNINDEX);
-                    }
-                }
-            }
-        };
-
-        propTable.getTableHeader().setReorderingAllowed(false);
-
-        propTable.getColumn(COLUMNUNIQUE).setCellRenderer(new CheckButtonRender());
-        propTable.getColumn(COLUMNUNIQUE).setCellEditor(new CheckButtonEditor(new JCheckBox()));
-
-
-        propTable.getColumn(PRIMARYCOLUMN).setCellRenderer(new CheckButtonRender());
-        propTable.getColumn(PRIMARYCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
-
-        propTable.getColumn(CANBENULLCOLUMN).setCellRenderer(new CheckButtonRender());
-        propTable.getColumn(CANBENULLCOLUMN).setCellEditor(new CheckButtonEditor(new JCheckBox()));
-
-
-        propTable.getColumn(TYPECOLUMN).setCellRenderer(new MyComboBoxRender());
-
-        propTable.getColumn(TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox()));
-        propTable.setRowHeight(25);
+        propTable = new MyJTable(propData, fieldTypeMap);
 
         jScrollPane = new JScrollPane(propTable);
 
-
-        propTable.setFillsViewportHeight(true);
-        propTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //let generate the jtable use it to display.
         setTitle("create new mybatis files");
@@ -249,41 +170,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
             fieldTypeMap.put(info.getFieldName(), info.getFieldType());
         }
         return fieldTypeMap;
-    }
-
-    private Object[][] getDatas(List<ClassFieldInfo> propFields, int columnLength) {
-        Object[][] ss = new Object[propFields.size()][];
-        for (int i = 0; i < propFields.size(); i++) {
-            Object[] mm = new Object[columnLength];
-            ClassFieldInfo info = propFields.get(i);
-
-            mm[FIELDCOLUMNINDEX] = info.getFieldName();
-            mm[COLUMN_NAMECOLUMNINDEX] = GenCodeUtil.getUnderScore(info.getFieldName());
-            TypeProps typeProp = MySqlTypeUtil.getType(info.getFieldType());
-            if (typeProp == null) {
-                // TODO: 2016/12/25 ask user if ignore.
-            }
-            customTypeProp(info, typeProp);
-            mm[TYPECOLUMNINDEX] = typeProp.getDefaultType();
-            mm[LENGTHCOLUMNINDEX] = typeProp.getSize();
-            mm[UNIQUECOLUMNINDEX] = typeProp.getUnique();
-            mm[PRIMARYCOLUMNINDEX] = typeProp.getPrimary();
-            mm[CANBENULLCOLUMNINDEX] = typeProp.getCanBeNull();
-            mm[DEFAULT_VALUECOLUMNINDEX] = typeProp.getDefaultValue();
-            ss[i] = mm;
-        }
-        return ss;
-    }
-
-    private void customTypeProp(ClassFieldInfo info, TypeProps typeProp) {
-        if (info.getFieldName().equals("id")) {
-            typeProp.setPrimary(true);
-        } else if (info.getFieldName().toLowerCase().equals("updatetime")) {
-            TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault(MysqlTypeConstants.TIMESTAMP);
-            typeProp.setDefaultType(MysqlTypeConstants.TIMESTAMP);
-            typeProp.setDefaultValue(typeDefault.getDefaultValue());
-            typeProp.setSize(typeDefault.getSize());
-        }
     }
 
 
@@ -314,28 +200,28 @@ public class GenCodeInsertDialog extends DialogWrapper {
         List<GenCodeProp> props = new ArrayList<>();
         for (int i = 0; i < propFields.size(); i++) {
             GenCodeProp prop = new GenCodeProp();
-            Object value = propTable.getValueAt(i, FIELDCOLUMNINDEX);
+            Object value = propTable.getValueAt(i, MyJTable.FIELDCOLUMNINDEX);
             prop.setFieldName(formatString(value));
 
-            Object column = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
+            Object column = propTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
             prop.setColumnName(formatString(column));
 
-            Object type = propTable.getValueAt(i, TYPECOLUMNINDEX);
+            Object type = propTable.getValueAt(i, MyJTable.TYPECOLUMNINDEX);
             prop.setFiledType(formatString(type));
 
-            Object length = propTable.getValueAt(i, LENGTHCOLUMNINDEX);
+            Object length = propTable.getValueAt(i, MyJTable.LENGTHCOLUMNINDEX);
             prop.setSize(formatString(length));
 
-            Object unique = propTable.getValueAt(i, UNIQUECOLUMNINDEX);
+            Object unique = propTable.getValueAt(i, MyJTable.UNIQUECOLUMNINDEX);
             prop.setUnique(formatBoolean(unique));
 
-            Object primary = propTable.getValueAt(i, PRIMARYCOLUMNINDEX);
+            Object primary = propTable.getValueAt(i, MyJTable.PRIMARYCOLUMNINDEX);
             prop.setPrimaryKey(formatBoolean(primary));
 
-            Object canbenull = propTable.getValueAt(i, CANBENULLCOLUMNINDEX);
+            Object canbenull = propTable.getValueAt(i, MyJTable.CANBENULLCOLUMNINDEX);
             prop.setCanBeNull(formatBoolean(canbenull));
 
-            Object defaultValue = propTable.getValueAt(i, DEFAULT_VALUECOLUMNINDEX);
+            Object defaultValue = propTable.getValueAt(i, MyJTable.DEFAULT_VALUECOLUMNINDEX);
             prop.setDefaultValue(formatString(defaultValue));
             if (prop.getPrimaryKey()) {
                 toSeeResult.setPrimaryProp(prop);
@@ -436,7 +322,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
 
         for (int i = 0; i < propFields.size(); i++) {
-            Object valueAt = propTable.getValueAt(i, COLUMN_NAMECOLUMNINDEX);
+            Object valueAt = propTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
             String message = "column name is empty on row " + i;
             Validate.notNull(valueAt, message);
             if (!(valueAt instanceof String)) {
@@ -553,92 +439,5 @@ public class GenCodeInsertDialog extends DialogWrapper {
         jPanel.add(sqlOpenFolder, bag);
     }
 
-    class CheckButtonRender extends JCheckBox implements TableCellRenderer {
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setSelected((value != null && ((Boolean) value).booleanValue()));
-            return this;
-        }
-    }
-
-
-    class CheckButtonEditor extends DefaultCellEditor {
-        public CheckButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-        }
-
-
-    }
-
-    class MyComboBoxRender implements TableCellRenderer {
-
-        private Map<Integer, JComboBox> jComboBoxMap = new HashMap<>();
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if (jComboBoxMap.get(row) == null) {
-                JComboBox jComboBox = new JComboBox();
-                Object fieldName = table.getValueAt(row, 0);
-                String fieldType = fieldTypeMap.get(fieldName);
-                String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
-                TypeProps type = MySqlTypeUtil.getType(fieldType);
-                if (recommendTypes == null) {
-                    jComboBox.addItem(type.getDefaultType());
-                } else {
-                    for (String recommend : recommendTypes) {
-                        jComboBox.addItem(recommend);
-                    }
-                }
-                jComboBoxMap.put(row, jComboBox);
-            }
-            JComboBox jComboBox = jComboBoxMap.get(row);
-            if (value != null) {
-                jComboBox.setSelectedItem(value);
-                //
-            }
-            return jComboBox;
-            //find the filedType.
-
-        }
-    }
-
-    class MyComboBoxEditor extends DefaultCellEditor {
-
-        private Map<Integer, String[]> itemMap = new HashMap<>();
-
-        public MyComboBoxEditor(JComboBox comboBox) {
-            super(comboBox);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            JComboBox editorComponent
-                    = (JComboBox) this.editorComponent;
-            editorComponent.removeAllItems();
-            if (itemMap.get(row) == null) {
-                Object fieldName = table.getValueAt(row, 0);
-                String fieldType = fieldTypeMap.get(fieldName);
-                String[] recommendTypes = MySqlTypeUtil.getRecommendTypes(fieldType);
-                TypeProps type = MySqlTypeUtil.getType(fieldType);
-                if (recommendTypes == null) {
-                    editorComponent.addItem(type.getDefaultType());
-                    itemMap.put(row, new String[]{type.getDefaultType()});
-                } else {
-                    for (String recommend : recommendTypes) {
-                        editorComponent.addItem(recommend);
-                    }
-                    itemMap.put(row, recommendTypes);
-                }
-            } else {
-                for (String recommend : itemMap.get(row)) {
-                    editorComponent.addItem(recommend);
-                }
-            }
-
-            return super.getTableCellEditorComponent(table, value, isSelected, row, column);
-        }
-
-
-    }
 }
