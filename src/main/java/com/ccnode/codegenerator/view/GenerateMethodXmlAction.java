@@ -172,6 +172,12 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                 if (tableName != null) {
                     break;
                 }
+                // TODO: 2016/12/27  if table name is to long need to inform the user.
+                if (tableName.length() > 30) {
+                    Messages.showErrorDialog("can't extract table name from your insert statement," +
+                            "\n  the table name we found is " + tableName, "table name unknown");
+                    return;
+                }
             } else if (relation == null && tag.getName().equalsIgnoreCase("resultMap")) {
                 String resultMapId;
                 XmlAttribute id = tag.getAttribute("id");

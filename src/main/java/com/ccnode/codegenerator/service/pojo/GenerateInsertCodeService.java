@@ -8,9 +8,9 @@ import com.ccnode.codegenerator.genCode.GenMapperService;
 import com.ccnode.codegenerator.genCode.GenServiceService;
 import com.ccnode.codegenerator.genCode.GenSqlService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,10 +20,10 @@ import java.util.concurrent.Executors;
  */
 public class GenerateInsertCodeService {
 
-    public static void generateInsert(InsertDialogResult insertDialogResult) {
+    public static List<String> generateInsert(InsertDialogResult insertDialogResult) {
         Map<InsertFileType, InsertFileProp> fileProps = insertDialogResult.getFileProps();
         ExecutorService executorService = Executors.newFixedThreadPool(fileProps.size());
-        List<String> errorMsgs = new ArrayList<>();
+        List<String> errorMsgs = new CopyOnWriteArrayList<>();
         CountDownLatch latch = new CountDownLatch(fileProps.size());
         for (InsertFileType fileType : fileProps.keySet()) {
             executorService.submit(() -> {
@@ -43,6 +43,7 @@ public class GenerateInsertCodeService {
             e.printStackTrace();
         }
         executorService.shutdown();
+        return errorMsgs;
     }
 
 
@@ -57,7 +58,7 @@ public class GenerateInsertCodeService {
                 break;
             }
             case MAPPER_XML: {
-                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName(), insertDialogResult.getPrimaryKey());
+                GenMapperService.generateMapperXml(propMap.get(type), insertDialogResult.getPropList(), insertDialogResult.getSrcClass(), propMap.get(InsertFileType.DAO), insertDialogResult.getTableName());
                 break;
             }
             case SERVICE: {
