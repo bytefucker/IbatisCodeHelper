@@ -2,14 +2,13 @@ package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
-import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethod;
-import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
-import com.ccnode.codegenerator.dialog.dto.mybatis.MapperSql;
-import com.ccnode.codegenerator.dialog.dto.mybatis.ResultMap;
+import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +23,7 @@ import java.util.List;
  * Created by bruce.ge on 2016/12/27.
  */
 public class UpdateDialogMore extends DialogWrapper {
+    public static final String PARAMANNOSTART = "@Param(\"";
     private Project myProject;
 
     private PsiClass myClass;
@@ -43,6 +43,13 @@ public class UpdateDialogMore extends DialogWrapper {
     private String message;
 
     private MapperDto mapperDto;
+
+
+    private List<JCheckWithResultMap> jCheckWithResultMaps;
+
+    private List<JCheckWithMapperSql> jCheckWithMapperSqls;
+
+    private List<JcheckWithMapperMethod> jcheckWithMapperMethods;
 
     public UpdateDialogMore(Project project, PsiClass srcClass, XmlFile xmlFile, PsiClass nameSpaceDaoClass) {
         super(project, true);
@@ -65,7 +72,73 @@ public class UpdateDialogMore extends DialogWrapper {
             message = "there is no field to update or add, please check again with your resultMap";
             return;
         }
+        addWithCheckBoxs();
 
+    }
+
+    private void addWithCheckBoxs() {
+        this.jCheckWithResultMaps = new ArrayList<>();
+        mapperDto.getResultMapList().forEach((item) -> {
+            JCheckWithResultMap e = new JCheckWithResultMap();
+            e.setjCheckBox(new JCheckBox("resultMap id=" + item.getId(), true));
+            e.setResultMap(item);
+            jCheckWithResultMaps.add(e);
+        });
+
+        this.jCheckWithMapperSqls = new ArrayList<>();
+        mapperDto.getSqls().forEach((item) -> {
+            JCheckWithMapperSql e = new JCheckWithMapperSql();
+            e.setMapperSql(item);
+            e.setjCheckBox(new JCheckBox("sql id=" + item.getId()));
+            jCheckWithMapperSqls.add(e);
+        });
+
+        List<ClassMapperMethod> methods = new ArrayList<>();
+        PsiMethod[] allMethods = this.myDaoClass.getAllMethods();
+        for (PsiMethod method : allMethods) {
+            PsiParameter[] parameters = method.getParameterList().getParameters();
+            for (PsiParameter psiParameter : parameters) {
+                String typeText = psiParameter.getType().getCanonicalText();
+                if (typeText.contains(myClass.getQualifiedName())) {
+                    ClassMapperMethod mapperMethod = new ClassMapperMethod();
+                    mapperMethod.setMethodName(method.getName());
+                    if (typeText.startsWith("java.util")) {
+                        mapperMethod.setList(true);
+                    }
+                    if (psiParameter.getText().startsWith(PARAMANNOSTART)) {
+                        mapperMethod.setParamAnno(extractParam(psiParameter.getText()));
+                    }
+                    methods.add(mapperMethod);
+                    break;
+                }
+            }
+        }
+
+        jcheckWithMapperMethods = new ArrayList<>();
+
+        methods.forEach((item) -> {
+            MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
+            if (mapperMethod != null) {
+
+                JcheckWithMapperMethod e = new JcheckWithMapperMethod();
+                e.setjCheckBox(new JCheckBox(mapperMethod.getType().name() + " id " + item.getMethodName(), true));
+                e.setClassMapperMethod(item);
+                e.setMapperMethod(mapperMethod);
+                jcheckWithMapperMethods.add(e);
+            }
+        });
+
+
+    }
+
+    private String extractParam(String typeText) {
+        String paramAnno = "";
+        int i = PARAMANNOSTART.length();
+        while (typeText.charAt(i) != '\"' && i < typeText.length()) {
+            paramAnno += typeText.charAt(i);
+            i++;
+        }
+        return paramAnno;
     }
 
     private void extractAddAndDelete() {

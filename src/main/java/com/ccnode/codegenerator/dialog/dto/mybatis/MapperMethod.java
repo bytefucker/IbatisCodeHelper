@@ -10,7 +10,6 @@ public class MapperMethod {
 
     private XmlTag xmlTag;
 
-
     public MapperMethodEnum getType() {
         return type;
     }
