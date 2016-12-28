@@ -5,7 +5,9 @@ import com.ccnode.codegenerator.util.GenCodeUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by bruce.ge on 2016/12/27.
@@ -29,7 +31,7 @@ class MyJTable extends JTable {
     public static final int DEFAULT_VALUECOLUMNINDEX = 7;
     public static String[] columnNames = {FILEDCOLUMN, COLUMN_NAMECOLUMN, TYPECOLUMN, LENGTHCOLUMN, COLUMNUNIQUE, PRIMARYCOLUMN, CANBENULLCOLUMN, DEFAULT_VALUE_COLUMN};
 
-    public MyJTable(Object[][] propData,Map<String,String> fieldTypeMap) {
+    public MyJTable(Object[][] propData, Map<String, String> fieldTypeMap) {
         super(propData, columnNames);
         this.getTableHeader().setReorderingAllowed(false);
 
@@ -46,7 +48,7 @@ class MyJTable extends JTable {
 
         this.getColumn(MyJTable.TYPECOLUMN).setCellRenderer(new MyComboBoxRender(fieldTypeMap));
 
-        this.getColumn(MyJTable.TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox(),fieldTypeMap));
+        this.getColumn(MyJTable.TYPECOLUMN).setCellEditor(new MyComboBoxEditor(new JComboBox(), fieldTypeMap));
         this.setRowHeight(25);
 
         this.setFillsViewportHeight(true);
@@ -54,16 +56,16 @@ class MyJTable extends JTable {
     }
 
     static Object[][] getDatas(java.util.List<ClassFieldInfo> propFields) {
-        Object[][] ss = new Object[propFields.size()][];
+        List<Object[]> ssList = new ArrayList<>();
         for (int i = 0; i < propFields.size(); i++) {
             Object[] mm = new Object[columnNames.length];
             ClassFieldInfo info = propFields.get(i);
-
             mm[FIELDCOLUMNINDEX] = info.getFieldName();
             mm[COLUMN_NAMECOLUMNINDEX] = GenCodeUtil.getUnderScore(info.getFieldName());
             TypeProps typeProp = MySqlTypeUtil.getType(info.getFieldType());
             if (typeProp == null) {
                 // TODO: 2016/12/25 ask user if ignore.
+                continue;
             }
             customTypeProp(info, typeProp);
             mm[TYPECOLUMNINDEX] = typeProp.getDefaultType();
@@ -72,8 +74,10 @@ class MyJTable extends JTable {
             mm[PRIMARYCOLUMNINDEX] = typeProp.getPrimary();
             mm[CANBENULLCOLUMNINDEX] = typeProp.getCanBeNull();
             mm[DEFAULT_VALUECOLUMNINDEX] = typeProp.getDefaultValue();
-            ss[i] = mm;
+            ssList.add(mm);
         }
+        Object[][] ss = new Object[ssList.size()][];
+        ssList.toArray(ss);
         return ss;
     }
 
@@ -103,7 +107,7 @@ class MyJTable extends JTable {
 
     @Override
     public void setValueAt(Object aValue, int row, int column) {
-        // TODO: 2016/12/26 could do better not using getColumn.
+        // TODO: 2016/12/28 add primary key check
         super.setValueAt(aValue, row, column);
         if (column == TYPECOLUMNINDEX) {
             TypeDefault typeDefault = MySqlTypeUtil.getTypeDefault((String) aValue);

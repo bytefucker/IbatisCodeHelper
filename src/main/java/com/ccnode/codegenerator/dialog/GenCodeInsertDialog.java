@@ -126,7 +126,7 @@ public class GenCodeInsertDialog extends DialogWrapper {
 
         this.propFields = PsiClassUtil.buildPropFieldInfo(psiClass);
 
-        this.fieldTypeMap = extractMap(propFields);
+        this.fieldTypeMap = GenCodeDialogUtil.extractMap(propFields);
 
         if (propFields.size() == 0) {
             // TODO: 2016/12/25
@@ -162,14 +162,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
         //let generate the jtable use it to display.
         setTitle("create new mybatis files");
         init();
-    }
-
-    private Map<String, String> extractMap(List<ClassFieldInfo> propFields) {
-        Map<String, String> fieldTypeMap = new HashMap<>();
-        for (ClassFieldInfo info : propFields) {
-            fieldTypeMap.put(info.getFieldName(), info.getFieldType());
-        }
-        return fieldTypeMap;
     }
 
 
