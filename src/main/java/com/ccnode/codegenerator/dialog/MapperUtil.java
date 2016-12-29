@@ -1,6 +1,8 @@
 package com.ccnode.codegenerator.dialog;
 
+import com.ccnode.codegenerator.dialog.dto.mybatis.ClassMapperMethod;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
+import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,8 +67,9 @@ public class MapperUtil {
         String newAddInsert = "";
 
         for (int i = 0; i < newAddedProps.size(); i++) {
+            newAddInsert +=",";
             newAddInsert += GenCodeUtil.wrapComma(newAddedProps.get(i).getColumnName());
-            newAddInsert += ",\n" + GenCodeUtil.TWO_RETRACT;
+            newAddInsert += "\n" + GenCodeUtil.TWO_RETRACT;
         }
 
         String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end);
@@ -90,5 +93,16 @@ public class MapperUtil {
             c = uu.charAt(--end);
         }
         return uu.substring(start - 1, end + 1);
+    }
+
+    public static String generateMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethodEnum type, ClassMapperMethod classMapperMethod, String sqlText) {
+        switch (type) {
+            case INSERT: {
+
+                break;
+            }
+        }
+
+        return null;
     }
 }

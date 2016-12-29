@@ -135,12 +135,28 @@ public class UpdateDialogMore extends DialogWrapper {
             }
         });
 
+        this.jcheckWithMapperMethods.forEach((item) -> {
+            if (item.getjCheckBox().isSelected()) {
+                handleWithMapperMethod(newAddedProps, deletedFields, item.getMapperMethod(), item.getClassMapperMethod());
+            }
+        });
+
         super.doOKAction();
+    }
+
+    private void handleWithMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
+        String sqlText = mapperMethod.getXmlTag().getValue().getText();
+        String newValueText = MapperUtil.generateMapperMethod(newAddedProps, deletedFields, mapperMethod.getType(), classMapperMethod, sqlText);
+        if(newValueText==null){
+            return;
+        }
+        //else set with value.
+
     }
 
     private void handleWithSql(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperSql mapperSql) {
         String sqlText = mapperSql.getTag().getValue().getText();
-        String newValueText = MapperUtil.generateSql(newAddedProps,deletedFields, sqlText,this.existingFields);
+        String newValueText = MapperUtil.generateSql(newAddedProps, deletedFields, sqlText, this.existingFields);
         if (newValueText == null) return;
         WriteCommandAction.runWriteCommandAction(myProject, () -> {
             mapperSql.getTag().getValue().setText(newValueText);
