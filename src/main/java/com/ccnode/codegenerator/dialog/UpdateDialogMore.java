@@ -140,7 +140,6 @@ public class UpdateDialogMore extends DialogWrapper {
                 handleWithMapperMethod(newAddedProps, deletedFields, item.getMapperMethod(), item.getClassMapperMethod());
             }
         });
-
         super.doOKAction();
     }
 
@@ -264,6 +263,8 @@ public class UpdateDialogMore extends DialogWrapper {
             }
         });
 
+        jcheckWithMapperMethods = new ArrayList<>();
+
         List<ClassMapperMethod> methods = new ArrayList<>();
         PsiMethod[] allMethods = this.myDaoClass.getAllMethods();
         for (PsiMethod method : allMethods) {
@@ -285,19 +286,18 @@ public class UpdateDialogMore extends DialogWrapper {
             }
         }
 
-        jcheckWithMapperMethods = new ArrayList<>();
 
-        methods.forEach((item) -> {
-            MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
-            if (mapperMethod != null) {
-
-                JcheckWithMapperMethod e = new JcheckWithMapperMethod();
-                e.setjCheckBox(new JCheckBox(mapperMethod.getType().name() + " id " + item.getMethodName(), true));
-                e.setClassMapperMethod(item);
-                e.setMapperMethod(mapperMethod);
-                jcheckWithMapperMethods.add(e);
-            }
-        });
+        //todo just ignore the mapper method. use other way for user to use.
+//        methods.forEach((item) -> {
+//            MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
+//            if (mapperMethod != null) {
+//                JcheckWithMapperMethod e = new JcheckWithMapperMethod();
+//                e.setjCheckBox(new JCheckBox(mapperMethod.getType().name() + " id " + item.getMethodName(), true));
+//                e.setClassMapperMethod(item);
+//                e.setMapperMethod(mapperMethod);
+//                jcheckWithMapperMethods.add(e);
+//            }
+//        });
 
 
     }
