@@ -142,5 +142,18 @@ class MyJTable extends JTable {
                 super.setValueAt(typeDefault.getDefaultValue(), row, DEFAULT_VALUECOLUMNINDEX);
             }
         }
+
+        if (column == PRIMARYCOLUMNINDEX) {
+            if (aValue instanceof Boolean) {
+                Boolean s = (Boolean) aValue;
+                if (s) {
+                    for (int i = 0; i < this.getRowCount(); i++) {
+                        if (i != row) {
+                            super.setValueAt(false, i, column);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
