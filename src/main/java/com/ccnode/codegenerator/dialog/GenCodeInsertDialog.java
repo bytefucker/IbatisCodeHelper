@@ -1,7 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.*;
-import com.ccnode.codegenerator.dialog.exception.NotStringException;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -193,28 +192,28 @@ public class GenCodeInsertDialog extends DialogWrapper {
         for (int i = 0; i < propFields.size(); i++) {
             GenCodeProp prop = new GenCodeProp();
             Object value = propTable.getValueAt(i, MyJTable.FIELDCOLUMNINDEX);
-            prop.setFieldName(formatString(value));
+            prop.setFieldName(MyJTable.formatString(value));
 
             Object column = propTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
-            prop.setColumnName(formatString(column));
+            prop.setColumnName(MyJTable.formatString(column));
 
             Object type = propTable.getValueAt(i, MyJTable.TYPECOLUMNINDEX);
-            prop.setFiledType(formatString(type));
+            prop.setFiledType(MyJTable.formatString(type));
 
             Object length = propTable.getValueAt(i, MyJTable.LENGTHCOLUMNINDEX);
-            prop.setSize(formatString(length));
+            prop.setSize(MyJTable.formatString(length));
 
             Object unique = propTable.getValueAt(i, MyJTable.UNIQUECOLUMNINDEX);
-            prop.setUnique(formatBoolean(unique));
+            prop.setUnique(MyJTable.formatBoolean(unique));
 
             Object primary = propTable.getValueAt(i, MyJTable.PRIMARYCOLUMNINDEX);
-            prop.setPrimaryKey(formatBoolean(primary));
+            prop.setPrimaryKey(MyJTable.formatBoolean(primary));
 
             Object canbenull = propTable.getValueAt(i, MyJTable.CANBENULLCOLUMNINDEX);
-            prop.setCanBeNull(formatBoolean(canbenull));
+            prop.setCanBeNull(MyJTable.formatBoolean(canbenull));
 
             Object defaultValue = propTable.getValueAt(i, MyJTable.DEFAULT_VALUECOLUMNINDEX);
-            prop.setDefaultValue(formatString(defaultValue));
+            prop.setDefaultValue(MyJTable.formatString(defaultValue));
             if (prop.getPrimaryKey()) {
                 toSeeResult.setPrimaryProp(prop);
             }
@@ -322,27 +321,6 @@ public class GenCodeInsertDialog extends DialogWrapper {
             }
             Validate.notBlank((String) valueAt, message);
         }
-    }
-
-    private Boolean formatBoolean(Object unique) {
-        if (unique == null) {
-            return false;
-        }
-
-        if (!(unique instanceof Boolean)) {
-            return false;
-        }
-        return (Boolean) unique;
-    }
-
-    private String formatString(Object value) {
-        if (value == null) {
-            return "";
-        }
-        if (!(value instanceof String)) {
-            throw new NotStringException();
-        }
-        return ((String) value).trim();
     }
 
     @Nullable

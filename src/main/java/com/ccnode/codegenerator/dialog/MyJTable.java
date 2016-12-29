@@ -1,6 +1,7 @@
 package com.ccnode.codegenerator.dialog;
 
 import com.ccnode.codegenerator.dialog.datatype.*;
+import com.ccnode.codegenerator.dialog.exception.NotStringException;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 
 import javax.swing.*;
@@ -90,6 +91,28 @@ class MyJTable extends JTable {
             typeProp.setDefaultValue(typeDefault.getDefaultValue());
             typeProp.setSize(typeDefault.getSize());
         }
+    }
+
+    static Boolean formatBoolean(Object unique) {
+        if (unique == null) {
+            return false;
+        }
+
+        if (!(unique instanceof Boolean)) {
+            return false;
+        }
+        return (Boolean) unique;
+    }
+
+    static String formatString(Object value) {
+        if (value == null) {
+            return "";
+        }
+        if (!(value instanceof String)) {
+            // TODO: 2016/12/28 need handle it.
+            throw new NotStringException();
+        }
+        return ((String) value).trim();
     }
 
     @Override

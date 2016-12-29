@@ -5,19 +5,24 @@ import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
+import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.Consumer;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -26,6 +31,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+
+import static com.ccnode.codegenerator.dialog.MyJTable.formatBoolean;
+import static com.ccnode.codegenerator.dialog.MyJTable.formatString;
 
 /**
  * Created by bruce.ge on 2016/12/27.
@@ -75,6 +83,111 @@ public class UpdateDialogMore extends DialogWrapper {
 
     private List<JcheckWithMapperMethod> jcheckWithMapperMethods;
 
+    @Override
+    protected void doOKAction() {
+        try {
+            validateInput();
+        } catch (Exception e) {
+            Messages.showErrorDialog(myProject, e.getMessage(), "validate fail");
+            return;
+        }
+        List<GenCodeProp> newAddedProps = new ArrayList<>();
+        for (int i = 0; i < newAddFields.size(); i++) {
+            GenCodeProp prop = new GenCodeProp();
+            Object value = myTable.getValueAt(i, MyJTable.FIELDCOLUMNINDEX);
+            prop.setFieldName(formatString(value));
+
+            Object column = myTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
+            prop.setColumnName(formatString(column));
+
+            Object type = myTable.getValueAt(i, MyJTable.TYPECOLUMNINDEX);
+            prop.setFiledType(formatString(type));
+
+            Object length = myTable.getValueAt(i, MyJTable.LENGTHCOLUMNINDEX);
+            prop.setSize(formatString(length));
+
+            Object unique = myTable.getValueAt(i, MyJTable.UNIQUECOLUMNINDEX);
+            prop.setUnique(formatBoolean(unique));
+
+            Object primary = myTable.getValueAt(i, MyJTable.PRIMARYCOLUMNINDEX);
+            prop.setPrimaryKey(formatBoolean(primary));
+
+            Object canbenull = myTable.getValueAt(i, MyJTable.CANBENULLCOLUMNINDEX);
+            prop.setCanBeNull(formatBoolean(canbenull));
+
+            Object defaultValue = myTable.getValueAt(i, MyJTable.DEFAULT_VALUECOLUMNINDEX);
+            prop.setDefaultValue(formatString(defaultValue));
+            newAddedProps.add(prop);
+        }
+
+        MapperMethod extractTableMethod = null;
+        PsiDocumentManager manager = PsiDocumentManager.getInstance(myProject);
+        XmlDocument xmlDocument = myXmlFile.getDocument();
+        this.jCheckWithResultMaps.forEach((item) -> {
+            if (item.getjCheckBox().isSelected()) {
+                handleWithResultMap(newAddedProps, deletedFields, item.getResultMap());
+            }
+        });
+
+        this.jCheckWithMapperSqls.forEach((item) -> {
+            if (item.getjCheckBox().isSelected()) {
+                handleWithSql(newAddedProps, deletedFields, item.getMapperSql());
+            }
+        });
+
+        super.doOKAction();
+    }
+
+    private void handleWithSql(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperSql mapperSql) {
+        String text = mapperSql.getTag().getText();
+
+
+    }
+
+    private void handleWithResultMap(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, ResultMap resultMap) {
+        for (XmlTag tag : resultMap.getTag().getSubTags()) {
+            String property = tag.getAttributeValue("property");
+            if (StringUtils.isNotBlank(property)) {
+                for (ColumnAndField columnAndField : deletedFields) {
+                    if (property.equals(columnAndField.getField().toLowerCase())) {
+                        //go remove it.
+                        WriteCommandAction.runWriteCommandAction(myProject, () -> {
+                            tag.delete();
+                        });
+                    }
+                }
+            }
+        }
+        //maybe the new prop exist in the xmlTag
+
+        for (GenCodeProp prop : newAddedProps) {
+            XmlTag result = resultMap.getTag().createChildTag("result", "", "", false);
+            result.setAttribute("column", prop.getColumnName());
+            result.setAttribute("property", prop.getFieldName());
+            WriteCommandAction.runWriteCommandAction(myProject, () -> {
+                resultMap.getTag().addSubTag(result, false);
+            });
+        }
+    }
+
+    private void validateInput() {
+        for (int i = 0; i < newAddFields.size(); i++) {
+            Object valueAt = myTable.getValueAt(i, MyJTable.COLUMN_NAMECOLUMNINDEX);
+            String message = "column name is empty on row " + i;
+            Validate.notNull(valueAt, message);
+            if (!(valueAt instanceof String)) {
+                throw new RuntimeException(message);
+            }
+            Validate.notBlank((String) valueAt, message);
+        }
+
+        if (sqlFileRaidio.isSelected()) {
+            Validate.notBlank(sqlNameText.getText(), "sql name is empty");
+            Validate.notBlank(sqlPathText.getText(), "sql path is empty");
+        }
+
+    }
+
     public UpdateDialogMore(Project project, PsiClass srcClass, XmlFile xmlFile, PsiClass nameSpaceDaoClass) {
         super(project, true);
         this.myProject = project;
@@ -114,10 +227,22 @@ public class UpdateDialogMore extends DialogWrapper {
 
         this.jCheckWithMapperSqls = new ArrayList<>();
         mapperDto.getSqls().forEach((item) -> {
-            JCheckWithMapperSql e = new JCheckWithMapperSql();
-            e.setMapperSql(item);
-            e.setjCheckBox(new JCheckBox("sql id=" + item.getId(), true));
-            jCheckWithMapperSqls.add(e);
+            XmlTag tag = item.getTag();
+            String text = tag.getValue().getText();
+            boolean containField = false;
+
+            for (ColumnAndField existingField : existingFields) {
+                if (text.contains(existingField.getColumn())) {
+                    containField = true;
+                    break;
+                }
+            }
+            if (containField) {
+                JCheckWithMapperSql e = new JCheckWithMapperSql();
+                e.setMapperSql(item);
+                e.setjCheckBox(new JCheckBox("sql id=" + item.getId(), true));
+                jCheckWithMapperSqls.add(e);
+            }
         });
 
         List<ClassMapperMethod> methods = new ArrayList<>();
