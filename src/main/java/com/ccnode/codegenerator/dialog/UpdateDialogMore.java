@@ -139,9 +139,12 @@ public class UpdateDialogMore extends DialogWrapper {
     }
 
     private void handleWithSql(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperSql mapperSql) {
-        String text = mapperSql.getTag().getText();
-
-
+        String sqlText = mapperSql.getTag().getValue().getText();
+        String newValueText = MapperUtil.generateSql(newAddedProps,deletedFields, sqlText,this.existingFields);
+        if (newValueText == null) return;
+        WriteCommandAction.runWriteCommandAction(myProject, () -> {
+            mapperSql.getTag().getValue().setText(newValueText);
+        });
     }
 
     private void handleWithResultMap(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, ResultMap resultMap) {
