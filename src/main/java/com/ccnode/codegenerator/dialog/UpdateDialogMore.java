@@ -29,6 +29,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.List;
 
@@ -119,8 +123,6 @@ public class UpdateDialogMore extends DialogWrapper {
             prop.setDefaultValue(formatString(defaultValue));
             newAddedProps.add(prop);
         }
-
-        MapperMethod extractTableMethod = null;
         PsiDocumentManager manager = PsiDocumentManager.getInstance(myProject);
         XmlDocument xmlDocument = myXmlFile.getDocument();
         this.jCheckWithResultMaps.forEach((item) -> {
@@ -140,13 +142,72 @@ public class UpdateDialogMore extends DialogWrapper {
                 handleWithMapperMethod(newAddedProps, deletedFields, item.getMapperMethod(), item.getClassMapperMethod());
             }
         });
+
+        if (this.sqlFileRaidio.isSelected()) {
+            //generate sql file base on add prop.
+            String tableName = extractTableName();
+            List<String> retList = new ArrayList<>();
+            for (GenCodeProp field : newAddedProps) {
+                StringBuilder ret = new StringBuilder();
+                ret.append("ALTER TABLE " + tableName + " ADD " + field.getColumnName());
+                if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
+                    ret.append(" (" + field.getSize() + ")");
+                }
+                if (field.getUnique()) {
+                    ret.append(" UNIQUE");
+                }
+                if (!field.getCanBeNull()) {
+                    ret.append(" NOT NULL");
+                }
+
+                if (org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
+                    ret.append(" DEFAULT " + field.getDefaultValue());
+                }
+                if (field.getPrimaryKey()) {
+                    ret.append(" AUTO_INCREMENT");
+                }
+                ret.append(" COMMENT '" + field.getFieldName() + "';");
+                retList.add(ret.toString());
+            }
+
+            for (ColumnAndField deletedField : this.deletedFields) {
+                StringBuilder ret = new StringBuilder();
+                ret.append("ALTER TABLE DROP COLUMN ");
+                ret.append(deletedField.getColumn() + " ");
+                retList.add(ret.toString());
+            }
+
+            String sqlFileName = sqlNameText.getText().trim();
+            String sqlFileFolder = sqlPathText.getText().trim();
+            try {
+                String filePath = sqlFileFolder + "/" + sqlFileName;
+                Files.write(Paths.get(filePath), retList, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                throw new RuntimeException("can't write file " + sqlFileName + " to path " + sqlFileFolder + "/" + sqlFileName);
+            }
+
+        }
         super.doOKAction();
+    }
+
+    private String extractTableName() {
+        String tableName = "";
+        for (XmlTag tag : myXmlFile.getRootTag().getSubTags()) {
+            if (tag.getName().equalsIgnoreCase("insert")) {
+                String insertText = tag.getValue().getText();
+                tableName = MapperUtil.extractTable(insertText);
+                if (tableName != null) {
+                    return tableName;
+                }
+            }
+        }
+        return tableName;
     }
 
     private void handleWithMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
         String sqlText = mapperMethod.getXmlTag().getValue().getText();
         String newValueText = MapperUtil.generateMapperMethod(newAddedProps, deletedFields, mapperMethod.getType(), classMapperMethod, sqlText);
-        if(newValueText==null){
+        if (newValueText == null) {
             return;
         }
         //else set with value.

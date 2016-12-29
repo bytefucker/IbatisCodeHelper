@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.view;
 import com.ccnode.codegenerator.constants.MapperConstants;
 import com.ccnode.codegenerator.dialog.ChooseXmlToUseDialog;
 import com.ccnode.codegenerator.dialog.GenerateResultMapDialog;
+import com.ccnode.codegenerator.dialog.MapperUtil;
 import com.ccnode.codegenerator.dialog.MethodExistDialog;
 import com.ccnode.codegenerator.jpaparse.ReturnClassInfo;
 import com.ccnode.codegenerator.nextgenerationparser.QueryParseDto;
@@ -168,7 +169,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
             if (tag.getName().equalsIgnoreCase("insert")) {
                 String insertText = tag.getValue().getText();
                 //go format it.
-                tableName = extractTable(insertText);
+                tableName = MapperUtil.extractTable(insertText);
                 if (tableName != null) {
                     break;
                 }
@@ -457,57 +458,6 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
 
         return null;
 
-    }
-
-    private static String extractTable(String insertText) {
-        if (insertText.length() == 0) {
-            return null;
-        }
-        String formattedInsert = formatBlank(insertText).toLowerCase();
-        int i = formattedInsert.indexOf(INSERT_INTO);
-        if (i == -1) {
-            return null;
-        }
-        int s = i + INSERT_INTO.length() + 1;
-        StringBuilder resBuilder = new StringBuilder();
-        for (int j = s; j < formattedInsert.length(); j++) {
-            char c = formattedInsert.charAt(j);
-            if (!isBlankChar(c)) {
-                resBuilder.append(c);
-            } else {
-                break;
-            }
-        }
-        if (resBuilder.length() > 0) {
-            return resBuilder.toString();
-        } else {
-            return null;
-        }
-    }
-
-    private static String formatBlank(String insertText) {
-        StringBuilder result = new StringBuilder();
-        char firstChar = insertText.charAt(0);
-        result.append(firstChar);
-        boolean before = isBlankChar(firstChar);
-        for (int i = 1; i < insertText.length(); i++) {
-            char curChar = insertText.charAt(i);
-            boolean cur = isBlankChar(curChar);
-            if (cur && before) {
-                continue;
-            } else {
-                result.append(curChar);
-                before = cur;
-            }
-        }
-        return result.toString();
-    }
-
-    private static boolean isBlankChar(char c) {
-        if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == '<' || c == ')' || c == '>') {
-            return true;
-        }
-        return false;
     }
 
     private CreateTestDialog createTestDialog(Project project, Module srcModule, PsiClass srcClass, PsiPackage srcPackage) {

@@ -4,6 +4,7 @@ import com.ccnode.codegenerator.dialog.dto.mybatis.ClassMapperMethod;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
 import com.ccnode.codegenerator.util.GenCodeUtil;
+import com.ccnode.codegenerator.view.GenerateMethodXmlAction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -116,5 +117,56 @@ public class MapperUtil {
         }
 
         return null;
+    }
+
+    public static String extractTable(String insertText) {
+        if (insertText.length() == 0) {
+            return null;
+        }
+        String formattedInsert = formatBlank(insertText).toLowerCase();
+        int i = formattedInsert.indexOf(GenerateMethodXmlAction.INSERT_INTO);
+        if (i == -1) {
+            return null;
+        }
+        int s = i + GenerateMethodXmlAction.INSERT_INTO.length() + 1;
+        StringBuilder resBuilder = new StringBuilder();
+        for (int j = s; j < formattedInsert.length(); j++) {
+            char c = formattedInsert.charAt(j);
+            if (!isBlankChar(c)) {
+                resBuilder.append(c);
+            } else {
+                break;
+            }
+        }
+        if (resBuilder.length() > 0) {
+            return resBuilder.toString();
+        } else {
+            return null;
+        }
+    }
+
+    private static String formatBlank(String insertText) {
+        StringBuilder result = new StringBuilder();
+        char firstChar = insertText.charAt(0);
+        result.append(firstChar);
+        boolean before = isBlankChar(firstChar);
+        for (int i = 1; i < insertText.length(); i++) {
+            char curChar = insertText.charAt(i);
+            boolean cur = isBlankChar(curChar);
+            if (cur && before) {
+                continue;
+            } else {
+                result.append(curChar);
+                before = cur;
+            }
+        }
+        return result.toString();
+    }
+
+    private static boolean isBlankChar(char c) {
+        if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == '<' || c == ')' || c == '>') {
+            return true;
+        }
+        return false;
     }
 }
