@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by bruce.ge on 2016/12/29.
@@ -24,12 +26,12 @@ public class MapperUtil {
         int start = 0;
         int end = sqlText.length();
         String lowerSqlText = sqlText.toLowerCase();
-        int where = lowerSqlText.indexOf(WHERE);
+        int where = findMatchFor(lowerSqlText, WHERE);
         if (where != -1) {
             end = where;
             beforeWhere = sqlText.substring(0, where);
         }
-        int select = lowerSqlText.indexOf(SELECT);
+        int select = findMatchFor(lowerSqlText, SELECT);
         if (select != -1) {
             start = select + SELECT.length();
             beforeWhere = beforeWhere.substring(select + SELECT.length());
@@ -67,13 +69,23 @@ public class MapperUtil {
         String newAddInsert = "";
 
         for (int i = 0; i < newAddedProps.size(); i++) {
-            newAddInsert +=",";
+            newAddInsert += ",";
             newAddInsert += GenCodeUtil.wrapComma(newAddedProps.get(i).getColumnName());
             newAddInsert += "\n" + GenCodeUtil.TWO_RETRACT;
         }
 
         String newValueText = sqlText.substring(0, start) + beforeInsert + newAddInsert + sqlText.substring(end);
         return newValueText;
+    }
+
+    private static int findMatchFor(String lowerSqlText, String where) {
+        Pattern matcher = Pattern.compile("\\b" + where + "\\b");
+        Matcher matcher1 = matcher.matcher(lowerSqlText);
+        if (matcher1.find()) {
+            return matcher1.start();
+        } else {
+            return -1;
+        }
     }
 
     private static String trimUseLess(String uu) {

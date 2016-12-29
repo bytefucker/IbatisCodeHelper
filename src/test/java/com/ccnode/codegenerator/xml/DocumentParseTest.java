@@ -8,6 +8,10 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by bruce.ge on 2016/12/29.
@@ -59,11 +63,34 @@ public class DocumentParseTest {
 
 
     @Test
-    public void testSplit(){
+    public void testSplit() {
         String[] split = SQL_TEXT.split("(\\s|\n|\t)+");
         System.out.println(split.length);
         for (int i = 0; i < split.length; i++) {
             System.out.println(split[i]);
         }
+    }
+
+
+    @Test
+    public void testMatch() {
+        Pattern matcher = Pattern.compile("\\bselect\\b");
+        List<String> mm = new ArrayList<>();
+        mm.add("select from hello");
+        mm.add("select\nfromhello");
+        mm.add("select\tfromhello");
+        mm.add("hello select from nimei");
+        mm.add("selectnimade");
+
+        for (String s : mm) {
+            Matcher matcher1 = matcher.matcher(s);
+            while (matcher1.find()) {
+                int start = matcher1.start();
+                int end = matcher1.end();
+                System.out.println("find match for "+s+" the start is:" + start + " the end is:" + end);
+            }
+        }
+
+
     }
 }
