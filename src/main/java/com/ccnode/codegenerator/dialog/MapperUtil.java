@@ -169,4 +169,9 @@ public class MapperUtil {
         }
         return false;
     }
+
+    public static String extractClassShortName(String fullName) {
+        String[] split = fullName.split("\\.");
+        return split[split.length - 1];
+    }
 }

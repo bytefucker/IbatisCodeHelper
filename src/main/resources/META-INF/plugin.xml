@@ -117,6 +117,8 @@
         <completion.contributor language="JAVA"
                                 implementationClass="com.ccnode.codegenerator.view.SqlCompletionContributor"/>
 
+        <psi.referenceContributor implementation="com.ccnode.codegenerator.view.MyBatisJavaToXmlPsiReferenceContributor"/>
+
 
         <intentionAction>
             <className>com.ccnode.codegenerator.view.GenerateMethodXmlAction</className>
