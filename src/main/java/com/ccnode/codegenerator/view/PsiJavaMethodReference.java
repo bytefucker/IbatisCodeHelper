@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.view;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
@@ -31,7 +32,7 @@ public class PsiJavaMethodReference implements PsiReference {
 
     @Override
     public TextRange getRangeInElement() {
-        return new TextRange(0,this.psiElement.getTextLength());
+        return new TextRange(0, this.psiElement.getTextLength());
     }
 
     @Nullable
@@ -65,7 +66,10 @@ public class PsiJavaMethodReference implements PsiReference {
 
     @Override
     public boolean isReferenceTo(PsiElement element) {
-        return true;
+        if (element instanceof PsiMethod) {
+            return ((PsiMethod) element).getNameIdentifier() == resolve();
+        }
+        return false;
     }
 
     @NotNull
