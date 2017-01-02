@@ -151,8 +151,9 @@ public class UpdateDialogMore extends DialogWrapper {
             for (GenCodeProp field : newAddedProps) {
                 StringBuilder ret = new StringBuilder();
                 ret.append("ALTER TABLE " + tableName + " ADD " + field.getColumnName());
+                ret.append(" " + field.getFiledType());
                 if (org.apache.commons.lang.StringUtils.isNotBlank(field.getSize())) {
-                    ret.append(" (" + field.getSize() + ")");
+                    ret.append("(" + field.getSize() + ")");
                 }
                 if (field.getUnique()) {
                     ret.append(" UNIQUE");
