@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class MapperUtil {
 
     public static final String SELECT = "select";
-    public static final String WHERE = "where";
+    public static final String FROM = "from";
 
     @Nullable
     static String generateSql(List<GenCodeProp> newAddedProps, List<ColumnAndField> deleteFields, String sqlText, List<ColumnAndField> existingFields) {
@@ -27,7 +27,7 @@ public class MapperUtil {
         int start = 0;
         int end = sqlText.length();
         String lowerSqlText = sqlText.toLowerCase();
-        int where = findMatchFor(lowerSqlText, WHERE);
+        int where = findMatchFor(lowerSqlText, FROM);
         if (where != -1) {
             end = where;
             beforeWhere = sqlText.substring(0, where);
