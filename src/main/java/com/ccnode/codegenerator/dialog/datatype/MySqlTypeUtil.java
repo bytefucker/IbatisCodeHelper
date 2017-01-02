@@ -86,7 +86,7 @@ public class MySqlTypeUtil {
         javaRecommendMap.put("java.util.Date", dateType);
     }
 
-
+/*get the mysql type for java type.*/
     public static TypeProps getType(String type) {
         String m = javaDefaultMap.get(type);
         TypeDefault typeDefault = typeDefaultMap.get(m);

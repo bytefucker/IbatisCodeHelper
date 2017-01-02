@@ -85,8 +85,8 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
             return;
         }
 
-        PsiDirectory srcDir = element.getContainingFile().getContainingDirectory();
-        PsiPackage srcPackage = JavaDirectoryService.getInstance().getPackage(srcDir);
+//        PsiDirectory srcDir = element.getContainingFile().getContainingDirectory();
+//        PsiPackage srcPackage = JavaDirectoryService.getInstance().getPackage(srcDir);
         PsiElement parent = element.getParent();
         MethodXmlPsiInfo methodInfo = new MethodXmlPsiInfo();
         methodInfo.setPojoClass(pojoClass);
@@ -126,24 +126,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         }
         if (psixml == null) {
             //cant' find the file by name. then go to search it. will only search the file once.
-            PsiSearchHelper searchService = ServiceManager.getService(project, PsiSearchHelper.class);
-            List<XmlFile> xmlFiles = new ArrayList<XmlFile>();
-            searchService.processUsagesInNonJavaFiles("mapper", new PsiNonJavaFileReferenceProcessor() {
-                @Override
-                public boolean process(PsiFile file, int startOffset, int endOffset) {
-                    if (file instanceof XmlFile) {
-                        XmlFile xmlFile = (XmlFile) file;
-                        if (xmlFile.getRootTag() != null) {
-                            XmlAttribute namespace = xmlFile.getRootTag().getAttribute("namespace");
-                            if (namespace != null && namespace.getValue().equals(srcClass.getQualifiedName())) {
-                                xmlFiles.add(xmlFile);
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                }
-            }, GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(element)));
+            List<XmlFile> xmlFiles = searchMapperXml(project, element, srcClass);
             if (xmlFiles.size() == 0) {
                 Messages.showErrorDialog("can't find xml file for namespace " + srcClassName, "xml file not found error");
                 return;
@@ -341,6 +324,29 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         PsiDocumentUtils.commitAndSaveDocument(psiDocumentManager, xmlDocument);
 
         CodeInsightUtil.positionCursor(project, psixml, rootTag.getSubTags()[rootTag.getSubTags().length - 1]);
+    }
+
+    @NotNull
+    private static List<XmlFile> searchMapperXml(@NotNull Project project, @NotNull PsiElement element, final PsiClass srcClass) {
+        PsiSearchHelper searchService = ServiceManager.getService(project, PsiSearchHelper.class);
+        List<XmlFile> xmlFiles = new ArrayList<XmlFile>();
+        searchService.processUsagesInNonJavaFiles("mapper", new PsiNonJavaFileReferenceProcessor() {
+            @Override
+            public boolean process(PsiFile file, int startOffset, int endOffset) {
+                if (file instanceof XmlFile) {
+                    XmlFile xmlFile = (XmlFile) file;
+                    if (xmlFile.getRootTag() != null) {
+                        XmlAttribute namespace = xmlFile.getRootTag().getAttribute("namespace");
+                        if (namespace != null && namespace.getValue().equals(srcClass.getQualifiedName())) {
+                            xmlFiles.add(xmlFile);
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }, GlobalSearchScope.moduleScope(ModuleUtilCore.findModuleForPsiElement(element)));
+        return xmlFiles;
     }
 
     private FieldToColumnRelation convertToRelation(FieldToColumnRelation relation1) {
