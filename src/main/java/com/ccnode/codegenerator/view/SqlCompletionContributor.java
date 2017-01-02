@@ -38,11 +38,11 @@ public class SqlCompletionContributor extends CompletionContributor {
         PsiElement element = parameters.getPosition();
         PsiElement originalPosition = parameters.getOriginalPosition();
         PsiFile topLevelFile = InjectedLanguageUtil.getTopLevelFile(element);
-        if (!(topLevelFile instanceof PsiJavaFile)) {
+        if (topLevelFile == null || !(topLevelFile instanceof PsiJavaFile)) {
             return;
         }
         PsiClass containingClass = PsiElementUtil.getContainingClass(originalPosition);
-        if (!containingClass.isInterface()) {
+        if (containingClass == null || !containingClass.isInterface()) {
             return;
         }
         String text = originalPosition.getText();
