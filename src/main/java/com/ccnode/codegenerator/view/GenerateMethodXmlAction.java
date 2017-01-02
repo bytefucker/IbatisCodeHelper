@@ -157,7 +157,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
                     break;
                 }
                 // TODO: 2016/12/27  if table name is to long need to inform the user.
-                if (tableName.length() > 30) {
+                if (tableName != null && tableName.length() > 30) {
                     Messages.showErrorDialog("can't extract table name from your insert statement," +
                             "\n  the table name we found is " + tableName, "table name unknown");
                     return;

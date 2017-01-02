@@ -35,7 +35,7 @@ public class MapperXmlCompletionContributor extends CompletionContributor {
         String positionText = position.getText();
         String realStart = positionText.substring(0, positionText.length() - CompletionUtil.DUMMY_IDENTIFIER_TRIMMED.length());
         int m = realStart.lastIndexOf("`");
-        if (m != -1) {
+        if (m != -1 && m > realStart.length() - 10) {
             String lastText = realStart.substring(m + 1);
             PsiFile originalFile = parameters.getOriginalFile();
             if (!(originalFile instanceof XmlFile)) {
@@ -63,6 +63,13 @@ public class MapperXmlCompletionContributor extends CompletionContributor {
                 }
             });
         }
+
+        if (realStart.startsWith("ins")) {
+            result.addElement(LookupElementBuilder.create("insert into "));
+        }
+
+
+        
 
 
     }
