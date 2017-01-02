@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.dialog;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
+import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -445,6 +446,23 @@ public class UpdateDialogMore extends DialogWrapper {
                 }
             }
 
+        }
+
+        if (existingFields == null) {
+            //ask user to generate allColumnMap.
+            GenerateResultMapDialog generateResultMapDialog = new GenerateResultMapDialog(myProject, PsiClassUtil.buildPropFields(myClass), myClass.getQualifiedName());
+            boolean b = generateResultMapDialog.showAndGet();
+            existingFields = new ArrayList<>();
+            if (b) {
+                FieldToColumnRelation relation = generateResultMapDialog.getRelation();
+                Map<String, String> filedToColumnMap = relation.getFiledToColumnMap();
+                for (String m : filedToColumnMap.keySet()) {
+                    ColumnAndField e = new ColumnAndField();
+                    e.setColumn(filedToColumnMap.get(m));
+                    e.setField(m);
+                    existingFields.add(e);
+                }
+            }
         }
 
         dto.setResultMapList(resultMaps);

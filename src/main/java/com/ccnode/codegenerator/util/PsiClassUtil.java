@@ -76,4 +76,16 @@ public class PsiClassUtil {
         }
         return lists;
     }
+
+
+    public static List<String> buildPropFields(PsiClass psiClass) {
+        List<String> lists = new ArrayList<>();
+        PsiField[] allFields = psiClass.getAllFields();
+        for (PsiField psiField : allFields) {
+            if (psiField.hasModifierProperty("private") && !psiField.hasModifierProperty("static")) {
+                lists.add(psiField.getName());
+            }
+        }
+        return lists;
+    }
 }
