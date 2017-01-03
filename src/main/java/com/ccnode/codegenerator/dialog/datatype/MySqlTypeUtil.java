@@ -17,7 +17,6 @@ public class MySqlTypeUtil {
 
 
     static {
-
         javaDefaultMap.put("int", MysqlTypeConstants.INTEGER);
         javaDefaultMap.put("java.lang.Integer", MysqlTypeConstants.INTEGER);
 
@@ -86,7 +85,7 @@ public class MySqlTypeUtil {
         javaRecommendMap.put("java.util.Date", dateType);
     }
 
-/*get the mysql type for java type.*/
+    /*get the mysql type for java type.*/
     public static TypeProps getType(String type) {
         String m = javaDefaultMap.get(type);
         TypeDefault typeDefault = typeDefaultMap.get(m);
@@ -101,5 +100,9 @@ public class MySqlTypeUtil {
 
     public static String[] getRecommendTypes(String fieldType) {
         return javaRecommendMap.get(fieldType);
+    }
+
+    public static boolean isDefaultType(String type) {
+        return javaDefaultMap.get(type) != null;
     }
 }

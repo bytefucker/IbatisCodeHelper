@@ -50,6 +50,9 @@ public class MyBatisJavaToXmlPsiReferenceContributor extends PsiReferenceContrib
                         if (!tagNames.contains(selectTag.getName())) {
                             return PsiReference.EMPTY_ARRAY;
                         }
+                        if (!(selectTag.getParent() instanceof XmlTag)) {
+                            return PsiReference.EMPTY_ARRAY;
+                        }
                         XmlTag rootParent = (XmlTag) selectTag.getParent();
                         XmlAttribute namespaceAttribute = rootParent.getAttribute("namespace");
                         if (namespaceAttribute == null) {
