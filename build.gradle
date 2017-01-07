@@ -23,8 +23,8 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 intellij {
-//    IC-2016.1  IC-14.1.4
-    version 'IC-2016.1' //IntelliJ IDEA dependency
+//    IC-2016.1  IC-14.1.4 IC-2016.3
+    version 'IC-2016.3' //IntelliJ IDEA dependency
     plugins 'coverage' //Bundled plugin dependencies
     pluginName 'codehelper.generator'
     updateSinceUntilBuild false
@@ -46,7 +46,7 @@ dependencies{
 }
 
 group 'org.jetbrains'
-version '2017.01.02' // Plugin version
+version '2017.01.04' // Plugin version
 
 
 

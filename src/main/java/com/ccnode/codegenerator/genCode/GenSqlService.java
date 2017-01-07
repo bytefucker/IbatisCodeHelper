@@ -368,7 +368,7 @@ public class GenSqlService {
             ret.append(" NOT NULL");
         }
 
-        if (org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
+        if (!field.getPrimaryKey() && org.apache.commons.lang.StringUtils.isNotBlank(field.getDefaultValue())) {
             ret.append(" DEFAULT " + field.getDefaultValue());
         }
 
@@ -376,7 +376,7 @@ public class GenSqlService {
             ret.append(" AUTO_INCREMENT");
         }
 
-        ret.append(" COMMENT '" + field.getFieldName() + "'");
+        ret.append(" COMMENT '" + field.getFieldName() + "',");
 
         return ret.toString();
     }
