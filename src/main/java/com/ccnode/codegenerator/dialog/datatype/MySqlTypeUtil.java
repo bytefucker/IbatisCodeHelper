@@ -41,7 +41,7 @@ public class MySqlTypeUtil {
 
         typeDefaultMap.put(MysqlTypeConstants.DOUBLE, doubleTypeProp);
 
-        TypeDefault booleanProp = new TypeDefault("4", "-1");
+        TypeDefault booleanProp = new TypeDefault("4", "0");
         javaDefaultMap.put("boolean", MysqlTypeConstants.TINYINT);
         javaDefaultMap.put("java.lang.Boolean", MysqlTypeConstants.TINYINT);
 
