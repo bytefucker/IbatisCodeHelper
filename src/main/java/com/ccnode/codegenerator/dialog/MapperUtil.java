@@ -3,6 +3,7 @@ package com.ccnode.codegenerator.dialog;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ClassMapperMethod;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
+import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.view.GenerateMethodXmlAction;
 import org.jetbrains.annotations.Nullable;
@@ -108,12 +109,13 @@ public class MapperUtil {
         return uu.substring(start - 1, end + 1);
     }
 
-    public static String generateMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethodEnum type, ClassMapperMethod classMapperMethod, String sqlText) {
-        switch (type) {
-            case INSERT: {
+    public static String generateMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethodEnum type, ClassMapperMethod classMapperMethod) {
+        String methodName = classMapperMethod.getMethodName();
+        if(methodName.equals(MethodName.insert.name())){
+            //todo generate the replace text for it.
+            //for all the property to use.
+            
 
-                break;
-            }
         }
 
         return null;

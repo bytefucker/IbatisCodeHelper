@@ -3,9 +3,11 @@ package com.ccnode.codegenerator.dialog;
 import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.dialog.dto.MapperDto;
 import com.ccnode.codegenerator.dialog.dto.mybatis.*;
+import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.google.common.collect.Sets;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -44,6 +46,9 @@ import static com.ccnode.codegenerator.dialog.MyJTable.formatString;
  * Created by bruce.ge on 2016/12/27.
  */
 public class UpdateDialogMore extends DialogWrapper {
+
+
+    private final Set<String> defaultMethodSet = Sets.newHashSet(MethodName.insert.name(), MethodName.insertList.name(), MethodName.update.name());
     public static final String PARAMANNOSTART = "@Param(\"";
     private Project myProject;
 
@@ -207,10 +212,11 @@ public class UpdateDialogMore extends DialogWrapper {
     }
 
     private void handleWithMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
-        String sqlText = mapperMethod.getXmlTag().getValue().getText();
-        String newValueText = MapperUtil.generateMapperMethod(newAddedProps, deletedFields, mapperMethod.getType(), classMapperMethod, sqlText);
+        String newValueText = MapperUtil.generateMapperMethod(newAddedProps, deletedFields, mapperMethod.getType(), classMapperMethod);
         if (newValueText == null) {
             return;
+        } else {
+            mapperMethod.getXmlTag().getValue().setText(newValueText);
         }
         //else set with value.
 
@@ -350,17 +356,17 @@ public class UpdateDialogMore extends DialogWrapper {
         }
 
 
-        //todo just ignore the mapper method. use other way for user to use.
-//        methods.forEach((item) -> {
-//            MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
-//            if (mapperMethod != null) {
-//                JcheckWithMapperMethod e = new JcheckWithMapperMethod();
-//                e.setjCheckBox(new JCheckBox(mapperMethod.getType().name() + " id " + item.getMethodName(), true));
-//                e.setClassMapperMethod(item);
-//                e.setMapperMethod(mapperMethod);
-//                jcheckWithMapperMethods.add(e);
-//            }
-//        });
+        //todo make to replace the default method for user.
+        methods.forEach((item) -> {
+            MapperMethod mapperMethod = mapperDto.getMapperMethodMap().get(item.getMethodName());
+            if (mapperMethod != null && defaultMethodSet.contains(item.getMethodName())) {
+                JcheckWithMapperMethod e = new JcheckWithMapperMethod();
+                e.setjCheckBox(new JCheckBox("replace " + mapperMethod.getType().name() + " mapper id " + item.getMethodName(), false));
+                e.setClassMapperMethod(item);
+                e.setMapperMethod(mapperMethod);
+                jcheckWithMapperMethods.add(e);
+            }
+        });
 
 
     }

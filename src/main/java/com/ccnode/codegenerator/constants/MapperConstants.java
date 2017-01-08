@@ -6,4 +6,5 @@ package com.ccnode.codegenerator.constants;
 public class MapperConstants {
     public static final String ALL_COLUMN_MAP = "AllColumnMap";
     public static final String ALL_COLUMN = "all_column";
+
 }
