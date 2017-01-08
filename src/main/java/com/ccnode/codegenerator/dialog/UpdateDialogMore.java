@@ -174,7 +174,7 @@ public class UpdateDialogMore extends DialogWrapper {
 
             for (ColumnAndField deletedField : this.deletedFields) {
                 StringBuilder ret = new StringBuilder();
-                ret.append("ALTER TABLE DROP COLUMN ");
+                ret.append("ALTER TABLE " + tableName + " DROP COLUMN ");
                 ret.append(deletedField.getColumn() + " ");
                 retList.add(ret.toString());
             }
