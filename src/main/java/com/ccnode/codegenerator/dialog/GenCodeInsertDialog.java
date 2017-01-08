@@ -1,6 +1,6 @@
 package com.ccnode.codegenerator.dialog;
 
-import com.ccnode.codegenerator.dialog.datatype.*;
+import com.ccnode.codegenerator.dialog.datatype.ClassFieldInfo;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -218,6 +218,11 @@ public class GenCodeInsertDialog extends DialogWrapper {
                 toSeeResult.setPrimaryProp(prop);
             }
             props.add(prop);
+        }
+
+        if (toSeeResult.getPrimaryProp() == null) {
+            Messages.showErrorDialog(myProject, "please set a primary key", "validate fail");
+            return;
         }
 
         Path moduleSrc = Paths.get(moduleSrcPath);

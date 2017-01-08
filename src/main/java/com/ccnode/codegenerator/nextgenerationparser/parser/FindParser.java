@@ -277,7 +277,7 @@ public class FindParser extends BaseParser {
     }
 
     private boolean isValidEndState(int state) {
-        if (state == 0 || state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
+        if (state == 0 || state == 1 || state == 2 || state == 3 || state == 5 || state == 6 || state == 9 || state == 10) {
             return true;
         }
         return false;
