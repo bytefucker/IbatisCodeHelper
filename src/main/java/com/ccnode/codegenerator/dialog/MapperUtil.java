@@ -114,7 +114,7 @@ public class MapperUtil {
         if(methodName.equals(MethodName.insert.name())){
             //todo generate the replace text for it.
             //for all the property to use.
-            
+
 
         }
 
