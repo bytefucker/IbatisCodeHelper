@@ -7,6 +7,7 @@ import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -143,15 +144,19 @@ public class UpdateDialogMore extends DialogWrapper {
             }
         });
 
+
+        List<ColumnAndField> finalFields = extractFinalField(existingFields, newAddedProps, deletedFields);
+
+        String tableName = extractTableName();
+
         this.jcheckWithMapperMethods.forEach((item) -> {
             if (item.getjCheckBox().isSelected()) {
-                handleWithMapperMethod(newAddedProps, deletedFields, item.getMapperMethod(), item.getClassMapperMethod());
+                handleWithMapperMethod(finalFields, tableName, item.getMapperMethod(), item.getClassMapperMethod());
             }
         });
 
         if (this.sqlFileRaidio.isSelected()) {
             //generate sql file base on add prop.
-            String tableName = extractTableName();
             List<String> retList = new ArrayList<>();
             for (GenCodeProp field : newAddedProps) {
                 StringBuilder ret = new StringBuilder();
@@ -197,6 +202,31 @@ public class UpdateDialogMore extends DialogWrapper {
         super.doOKAction();
     }
 
+    private static List<ColumnAndField> extractFinalField(List<ColumnAndField> existingFields, List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields) {
+        List<ColumnAndField> finalFields = Lists.newArrayList();
+        boolean deleted = false;
+        for (ColumnAndField existingField : existingFields) {
+            for (ColumnAndField deletedField : deletedFields) {
+                if (deletedField.getField().equals(existingField.getField())) {
+                    deleted = true;
+                    break;
+                }
+            }
+            if (deleted) {
+                continue;
+            } else {
+                finalFields.add(existingField);
+            }
+        }
+        for (GenCodeProp newAddedProp : newAddedProps) {
+            ColumnAndField e = new ColumnAndField();
+            e.setColumn(newAddedProp.getColumnName());
+            e.setField(newAddedProp.getFieldName());
+            finalFields.add(e);
+        }
+        return finalFields;
+    }
+
     private String extractTableName() {
         String tableName = "";
         for (XmlTag tag : myXmlFile.getRootTag().getSubTags()) {
@@ -211,8 +241,9 @@ public class UpdateDialogMore extends DialogWrapper {
         return tableName;
     }
 
-    private void handleWithMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
-        String newValueText = MapperUtil.generateMapperMethod(newAddedProps, deletedFields, mapperMethod.getType(), classMapperMethod);
+    private void handleWithMapperMethod(List<ColumnAndField> finalFields
+            , String tableName, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
+        String newValueText = MapperUtil.generateMapperMethod(finalFields, tableName, mapperMethod.getType(), classMapperMethod);
         if (newValueText == null) {
             return;
         } else {

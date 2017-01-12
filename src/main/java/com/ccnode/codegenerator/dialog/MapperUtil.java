@@ -4,12 +4,16 @@ import com.ccnode.codegenerator.dialog.dto.mybatis.ClassMapperMethod;
 import com.ccnode.codegenerator.dialog.dto.mybatis.ColumnAndField;
 import com.ccnode.codegenerator.dialog.dto.mybatis.MapperMethodEnum;
 import com.ccnode.codegenerator.enums.MethodName;
+import com.ccnode.codegenerator.freemarker.TemplateConstants;
+import com.ccnode.codegenerator.freemarker.TemplateUtil;
 import com.ccnode.codegenerator.util.GenCodeUtil;
 import com.ccnode.codegenerator.view.GenerateMethodXmlAction;
+import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,16 +113,39 @@ public class MapperUtil {
         return uu.substring(start - 1, end + 1);
     }
 
-    public static String generateMapperMethod(List<GenCodeProp> newAddedProps, List<ColumnAndField> deletedFields, MapperMethodEnum type, ClassMapperMethod classMapperMethod) {
+    public static String generateMapperMethod(List<ColumnAndField> finalFields, String tableName, MapperMethodEnum type, ClassMapperMethod classMapperMethod) {
         String methodName = classMapperMethod.getMethodName();
-        if(methodName.equals(MethodName.insert.name())){
-            //todo generate the replace text for it.
-            //for all the property to use.
+        if (methodName.equals(MethodName.insert.name())) {
+            return genAddMethod(finalFields, tableName);
 
-
+        } else if (methodName.equals(MethodName.insertList.name())) {
+            return genAddsMethod(finalFields, tableName);
+        } else if (methodName.equals(MethodName.update.name())) {
+            return genUpdateMethod(finalFields, tableName);
         }
-
         return null;
+    }
+
+    private static String genUpdateMethod(List<ColumnAndField> finalFields, String tableName) {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put("finalFields", finalFields);
+        root.put("tableName", tableName);
+        return TemplateUtil.processToString(TemplateConstants.updateTemplateName, root);
+    }
+
+    private static String genAddsMethod(List<ColumnAndField> finalFields, String tableName) {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put("finalFields", finalFields);
+        root.put("tableName", tableName);
+        return TemplateUtil.processToString(TemplateConstants.insertListTemplateName, root);
+    }
+
+    private static String genAddMethod(List<ColumnAndField> finalFields, String tableName) {
+        Map<String, Object> root = Maps.newHashMap();
+        root.put("finalFields", finalFields);
+        root.put("tableName", tableName);
+        String s = TemplateUtil.processToString(TemplateConstants.insertTemplateName, root);
+        return s;
     }
 
     public static String extractTable(String insertText) {
