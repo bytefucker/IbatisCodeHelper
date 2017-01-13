@@ -114,6 +114,9 @@ public class MapperUtil {
     }
 
     public static String generateMapperMethod(List<ColumnAndField> finalFields, String tableName, MapperMethodEnum type, ClassMapperMethod classMapperMethod) {
+        if (tableName == null) {
+            tableName = "";
+        }
         String methodName = classMapperMethod.getMethodName();
         if (methodName.equals(MethodName.insert.name())) {
             return genAddMethod(finalFields, tableName);
@@ -130,6 +133,7 @@ public class MapperUtil {
         Map<String, Object> root = Maps.newHashMap();
         root.put("finalFields", finalFields);
         root.put("tableName", tableName);
+        // TODO: 2017/1/12 could know the primary key from  the old update string
         return TemplateUtil.processToString(TemplateConstants.updateTemplateName, root);
     }
 

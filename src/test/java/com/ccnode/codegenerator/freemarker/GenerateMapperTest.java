@@ -9,10 +9,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +33,11 @@ public class GenerateMapperTest {
         rootMap.put("beanShortType", "aboutPO");
 
         Template template = configuration.getTemplate("mapperdao.ftl");
-        FileWriter fileWriter = new FileWriter("boutMapper.java");
-        template.process(rootMap, fileWriter);
+//        FileWriter fileWriter = new FileWriter("boutMapper.java");
+        StringWriter stringWriter = new StringWriter();
+        template.process(rootMap, stringWriter);
+        System.out.println(stringWriter.toString());
+        System.out.println("nimei");
 
     }
 

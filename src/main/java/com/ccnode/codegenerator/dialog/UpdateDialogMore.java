@@ -7,6 +7,7 @@ import com.ccnode.codegenerator.enums.MethodName;
 import com.ccnode.codegenerator.pojo.FieldToColumnRelation;
 import com.ccnode.codegenerator.util.DateUtil;
 import com.ccnode.codegenerator.util.PsiClassUtil;
+import com.ccnode.codegenerator.util.PsiDocumentUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -16,6 +17,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
@@ -151,9 +153,11 @@ public class UpdateDialogMore extends DialogWrapper {
 
         this.jcheckWithMapperMethods.forEach((item) -> {
             if (item.getjCheckBox().isSelected()) {
-                handleWithMapperMethod(finalFields, tableName, item.getMapperMethod(), item.getClassMapperMethod());
+                handleWithMapperMethod(finalFields, tableName, item.getMapperMethod(), item.getClassMapperMethod(), manager);
             }
         });
+
+        PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
 
         if (this.sqlFileRaidio.isSelected()) {
             //generate sql file base on add prop.
@@ -242,12 +246,16 @@ public class UpdateDialogMore extends DialogWrapper {
     }
 
     private void handleWithMapperMethod(List<ColumnAndField> finalFields
-            , String tableName, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod) {
+            , String tableName, MapperMethod mapperMethod, ClassMapperMethod classMapperMethod, PsiDocumentManager manager) {
         String newValueText = MapperUtil.generateMapperMethod(finalFields, tableName, mapperMethod.getType(), classMapperMethod);
         if (newValueText == null) {
             return;
         } else {
-            mapperMethod.getXmlTag().getValue().setText(newValueText);
+            String finalValue = newValueText.replaceAll("\r", "");
+            WriteCommandAction.runWriteCommandAction(myProject, () -> {
+                TextRange valueTextRange = mapperMethod.getXmlTag().getValue().getTextRange();
+                manager.getDocument(myXmlFile.getContainingFile()).replaceString(valueTextRange.getStartOffset(), valueTextRange.getEndOffset(), finalValue);
+            });
         }
         //else set with value.
 
