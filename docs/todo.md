@@ -8,3 +8,4 @@
 - add support for unsigned
 - add support for create index
 - default value shall not add when is primary key.
+- the drop column page has probelm.

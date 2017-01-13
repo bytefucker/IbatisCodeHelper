@@ -190,7 +190,7 @@ public class UpdateDialogMore extends DialogWrapper {
             for (ColumnAndField deletedField : this.deletedFields) {
                 StringBuilder ret = new StringBuilder();
                 ret.append("ALTER TABLE " + tableName + " DROP COLUMN ");
-                ret.append(deletedField.getColumn() + " ");
+                ret.append(deletedField.getColumn() + ";");
                 retList.add(ret.toString());
             }
 
@@ -276,7 +276,7 @@ public class UpdateDialogMore extends DialogWrapper {
             String property = tag.getAttributeValue("property");
             if (StringUtils.isNotBlank(property)) {
                 for (ColumnAndField columnAndField : deletedFields) {
-                    if (property.equals(columnAndField.getField().toLowerCase())) {
+                    if (property.equalsIgnoreCase(columnAndField.getField())) {
                         //go remove it.
                         WriteCommandAction.runWriteCommandAction(myProject, () -> {
                             tag.delete();
@@ -595,6 +595,7 @@ public class UpdateDialogMore extends DialogWrapper {
             bag.gridx++;
             for (ColumnAndField columnAndField : deletedFields) {
                 jPanel.add(new JLabel(columnAndField.getField()), bag);
+                bag.gridx++;
             }
         }
 
