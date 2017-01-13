@@ -154,6 +154,7 @@ public class UpdateDialogMore extends DialogWrapper {
         this.jcheckWithMapperMethods.forEach((item) -> {
             if (item.getjCheckBox().isSelected()) {
                 handleWithMapperMethod(finalFields, tableName, item.getMapperMethod(), item.getClassMapperMethod(), manager);
+                PsiDocumentUtils.commitAndSaveDocument(manager, manager.getDocument(myXmlFile));
             }
         });
 

@@ -6,11 +6,10 @@
             (
         <#list finalFields as filedAndColumn>
             <#if filedAndColumn?is_last>
-            ${r"#"}{pojo.${filedAndColumn.field}}</if>
+            ${r"#"}{pojo.${filedAndColumn.field}}
             <#else>
-            ${r"#"}pojo.${filedAndColumn.field}},</if>
+            ${r"#"}pojo.${filedAndColumn.field}},
             </#if>
         </#list>
             )
         </foreach>
-
