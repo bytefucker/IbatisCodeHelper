@@ -10,3 +10,5 @@
 - default value shall not add when is primary key.
 - the drop column page has probelm.
 - should find primaryKey when update
+- support for auto completion in resultMap property.
+- support for xml attribute default values.
