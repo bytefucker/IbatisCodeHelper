@@ -135,7 +135,7 @@ public class GenServiceService {
         newLines.add(GenCodeUtil.TWO_RETRACT + "return " + daoName + "." + MethodName.insert.name() + "(pojo);");
         newLines.add(GenCodeUtil.ONE_RETRACT + "}");
         newLines.add("");
-        newLines.add(GenCodeUtil.ONE_RETRACT + "public int " + MethodName.insertList.name() + "(List< " + srcClass.getName() + "> pojos){");
+        newLines.add(GenCodeUtil.ONE_RETRACT + "public int " + MethodName.insertList.name() + "(List<" + srcClass.getName() + "> pojos){");
         newLines.add(GenCodeUtil.TWO_RETRACT + "return " + daoName + "." + MethodName.insertList.name() + "(pojos);");
         newLines.add(GenCodeUtil.ONE_RETRACT + "}");
         newLines.add("");
