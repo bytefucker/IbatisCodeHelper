@@ -12,3 +12,5 @@
 - should find primaryKey when update
 - support for auto completion in resultMap property.
 - support for xml attribute default values.
+- add @Mapper to mapper class.
+- maybe could search for mapper location, then use it as default.
