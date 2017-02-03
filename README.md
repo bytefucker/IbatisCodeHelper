@@ -12,15 +12,15 @@ codehelper.generator
 Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,和建表sql, 支持直接从接口方法名直接生成sql.
 -----------------------------------------------------------------------
 - 根据数据库对象一键生成 Dao接口，Service，Xml，数据库建表Sql文件  提供dao与xml的跳转
-![generateFile](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/generateFiles.gif)  
+![generateFile](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/generateFiles.gif)  
 
 
 - 根据dao中的方法名生成对应的在xml并进行方法补全 
-![find](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/find.gif)
-![update](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/update.gif)
-![delete](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/delete.gif)
-![count](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/count.gif)
-![all_1](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/all_1.gif)
+![find](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/find.gif)
+![update](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/update.gif)
+![delete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/delete.gif)
+![count](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/count.gif)
+![all_1](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/all_1.gif)
 
 安装
 ----
@@ -42,7 +42,7 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 
 使用方法
 --------------------------------------------------------------------------
-- 在项目resources 目录中添加 codehelper.properties 如[codehelper.properties](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/codehelper.properties)设置生成文件的目录。
+- 在项目resources 目录中添加 codehelper.properties 如[codehelper.properties](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/codehelper.properties)设置生成文件的目录。
 没有提供该文件则会在数据库对象所在的文件夹生成
 - 在数据库对象上使用alt+insert （generate mybatis files）生成对应的dao xml文件等 （mac上使用 ctrl+N 即getter setter对应的快捷键)
 - 当数据库对象添加字段后也可使用alt+insert （generate mybatis files）来生成更新后的xml。（只会更新默认的insert,insertList,update方法 其他自定义的方法不会变）
@@ -170,12 +170,12 @@ feature：
 联系作者 & 加入开发
 
 - 扫码加入 开发交流群
-- ![avatar](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/master/src/main/resources/group3.jpeg )
+- ![avatar](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/src/main/resources/group3.jpeg )
 
 
-[release-img]: https://img.shields.io/github/release/zhengjunbase/codehelper.generator.svg
-[latest-release]: https://github.com/zhengjunbase/codehelper.generator/releases/latest
-[badge-gitter-img]: https://img.shields.io/gitter/room/zhengjunbase/codehelper.generator.svg
+[release-img]: https://img.shields.io/github/release/gejun123456/MyBatisCodeHelper.svg
+[latest-release]: https://github.com/gejun123456/MyBatisCodeHelper/releases/latest
+[badge-gitter-img]: https://img.shields.io/gitter/room/gejun123456/MyBatisCodeHelper.svg
 [badge-gitter]: https://gitter.im/codehelper-generator/Lobby
 [plugin-img]: https://img.shields.io/badge/plugin-8640-orange.svg
 [plugin]: https://plugins.jetbrains.com/plugin/8640

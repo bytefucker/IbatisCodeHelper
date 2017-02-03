@@ -12,14 +12,14 @@ codehelper.generator
 Intellij code generate plugin. support to generate mybatis dao interface,mapper xml and create table sql base on domain class, use method name to generate mybatis sql.
 -----------------------------------------------------------------------
 - generate mybatis dao interface, mapper xml by domain class, support dao interface jump to mybatis mapper file.
-![generateFile](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/generateFiles.gif)  
+![generateFile](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/generateFiles.gif)  
 
 - generate mybatis sql base on method name.
-![find](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/find.gif)
-![update](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/update.gif)
-![delete](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/delete.gif)
-![count](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/count.gif)
-![all_1](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/screenshot/all_1.gif)
+![find](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/find.gif)
+![update](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/update.gif)
+![delete](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/delete.gif)
+![count](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/count.gif)
+![all_1](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/screenshot/all_1.gif)
 
 Installation
 ----
@@ -41,7 +41,7 @@ restart **IDE**.
 
 How to use
 --------------------------------------------------------------------------
-- add codehelper.properties like[codehelper.properties](https://raw.githubusercontent.com/zhengjunbase/codehelper.generator/develop/codehelper.properties) to your project resources folder which config the directory to store dao interface, mapper sql ect. if not provide, will generate files in the same directory of domain class.
+- add codehelper.properties like[codehelper.properties](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/codehelper.properties) to your project resources folder which config the directory to store dao interface, mapper sql ect. if not provide, will generate files in the same directory of domain class.
 - use alt+insert (generate mybatis files) on domain class to generate corresponding dao interface and mapper xml (on mac use with ctrl+N  which is the shortcut of generate getter/setter)
 - use alt+enter on mybatis dao interface to generate mybatis sql in mapper xml. and it will also complete your method with param and returnType.  
 
@@ -161,9 +161,9 @@ Others
 the project in screencut is from [https://github.com/gejun123456/codehelperPluginDemo](https://github.com/gejun123456/codehelperPluginDemo)  
 
 
-[release-img]: https://img.shields.io/github/release/zhengjunbase/codehelper.generator.svg
-[latest-release]: https://github.com/zhengjunbase/codehelper.generator/releases/latest
-[badge-gitter-img]: https://img.shields.io/gitter/room/zhengjunbase/codehelper.generator.svg
+[release-img]: https://img.shields.io/github/release/gejun123456/MyBatisCodeHelper.svg
+[latest-release]: https://github.com/gejun123456/MyBatisCodeHelper/releases/latest
+[badge-gitter-img]: https://img.shields.io/gitter/room/gejun123456/MyBatisCodeHelper.svg
 [badge-gitter]: https://gitter.im/codehelper-generator/Lobby
 [plugin-img]: https://img.shields.io/badge/plugin-8640-orange.svg
 [plugin]: https://plugins.jetbrains.com/plugin/8640
