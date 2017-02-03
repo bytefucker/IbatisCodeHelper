@@ -11,11 +11,12 @@ import com.ccnode.codegenerator.storage.SettingService;
 public class UrlManager {
 
     //    private static String GENERATOR_URL = "http://www.codehelper.me/generator/";
-    private static String MAIN_PAGE = "https://github.com/zhengjunbase/codehelper.generator";
-    private static String POST_URL = "http://www.codehelper.me/generator/post";
-    private static String DONATE_CLICK_URL = "http://www.codehelper.me/generator";
+    private static String MAIN_PAGE = "https://github.com/gejun123456/MyBatisCodeHelper";
 
-    public static final String GENERATOR_URL = "https://github.com/zhengjunbase/codehelper.generator/tree/develop";
+    // TODO: 2017/2/3 need fix?
+    private static String POST_URL = "http://www.codehelper.me/generator/post";
+
+    public static final String GENERATOR_URL = "https://github.com/zhengjunbase/MyBatisCodeHelper/tree/develop";
 
     public static String getUrlSuffix() {
         return "?id=" + SettingService.getUUID() + "&version=" + VersionManager.getCurrentVersion();
@@ -30,10 +31,6 @@ public class UrlManager {
         return POST_URL + getUrlSuffix();
     }
 
-
-    public static String getDonateClickUrl() {
-        return DONATE_CLICK_URL + getUrlSuffix() + "#toc_4";
-    }
 
 
 }
