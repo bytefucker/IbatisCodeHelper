@@ -1,6 +1,6 @@
 MyBatisCodeHelper
 =================
-[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] 
+[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin]
 <!--[![Gitter][badge-gitter-img]][badge-gitter]-->
 [![Version](http://phpstorm.espend.de/badge/9445/version)][plugin]  
 [![Downloads](http://phpstorm.espend.de/badge/9445/downloads)][plugin]
