@@ -27,8 +27,14 @@ public class PsiClassUtil {
         List<PsiMethod> methodsList = new ArrayList<PsiMethod>();
         for (PsiMethod classMethod : methods) {
             String name = classMethod.getName().toLowerCase();
-            if (name.startsWith("insert") || name.startsWith("save") || name.startsWith("add")) {
-                methodsList.add(classMethod);
+            if (name.startsWith("insert") || name.startsWith("save") || name.startsWith("add")||name.startsWith("create")) {
+                if(classMethod.getParameterList().getParameters().length==1){
+                    PsiParameter parameter = classMethod.getParameterList().getParameters()[0];
+                    //mean is not system class like collection class ect.
+                    if(!parameter.getType().getCanonicalText().startsWith("java.")){
+                        methodsList.add(classMethod);
+                    }
+                }
             }
         }
         if (methodsList.size() == 0) {
