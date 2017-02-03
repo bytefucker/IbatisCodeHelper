@@ -1,9 +1,9 @@
-codehelper.generator 
+MyBatisCodeHelper 
 =================
-[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Gitter][badge-gitter-img]][badge-gitter]
+<!--[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Gitter][badge-gitter-img]][badge-gitter]
 [![Version](http://phpstorm.espend.de/badge/8640/version)][plugin]  
 [![Downloads](http://phpstorm.espend.de/badge/8640/downloads)][plugin]
-[![Downloads last month](http://phpstorm.espend.de/badge/8640/last-month)][plugin]
+[![Downloads last month](http://phpstorm.espend.de/badge/8640/last-month)][plugin]-->
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 <div align="right">
 <a href="README-EN.md">English Documentation</a>
@@ -166,11 +166,6 @@ feature：
 其他
 ----------------------------------
 截图中的项目来自[https://github.com/gejun123456/codehelperPluginDemo](https://github.com/gejun123456/codehelperPluginDemo)  
-
-联系作者 & 加入开发
-
-- 扫码加入 开发交流群
-- ![avatar](https://raw.githubusercontent.com/gejun123456/MyBatisCodeHelper/master/src/main/resources/group3.jpeg )
 
 
 [release-img]: https://img.shields.io/github/release/gejun123456/MyBatisCodeHelper.svg
