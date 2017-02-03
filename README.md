@@ -1,9 +1,10 @@
 MyBatisCodeHelper 
 =================
-<!--[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Gitter][badge-gitter-img]][badge-gitter]
-[![Version](http://phpstorm.espend.de/badge/8640/version)][plugin]  
-[![Downloads](http://phpstorm.espend.de/badge/8640/downloads)][plugin]
-[![Downloads last month](http://phpstorm.espend.de/badge/8640/last-month)][plugin]-->
+[![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] 
+<!--[![Gitter][badge-gitter-img]][badge-gitter]-->
+[![Version](http://phpstorm.espend.de/badge/9445/version)][plugin]  
+[![Downloads](http://phpstorm.espend.de/badge/9445/downloads)][plugin]
+[![Downloads last month](http://phpstorm.espend.de/badge/9445/last-month)][plugin]
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 <div align="right">
 <a href="README-EN.md">English Documentation</a>
@@ -157,5 +158,5 @@ feature：
 [latest-release]: https://github.com/gejun123456/MyBatisCodeHelper/releases/latest
 [badge-gitter-img]: https://img.shields.io/gitter/room/gejun123456/MyBatisCodeHelper.svg
 [badge-gitter]: https://gitter.im/codehelper-generator/Lobby
-[plugin-img]: https://img.shields.io/badge/plugin-8640-orange.svg
-[plugin]: https://plugins.jetbrains.com/plugin/8640
+[plugin-img]: https://img.shields.io/badge/plugin-9445-orange.svg
+[plugin]: https://plugins.jetbrains.com/plugin/9445
