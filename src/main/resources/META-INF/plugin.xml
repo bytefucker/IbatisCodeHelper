@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-    <id>com.ccnode.codegenerator.mybatis.generator</id>
+    <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
     <version>1.0</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
@@ -56,21 +56,21 @@
     </change-notes>
 
     <actions>
-        <group id="com.ccnode.codegenerator.mybatis.generator" text="CodeHelper" description="Generator" popup="true">
+        <group id="com.ccnode.codegenerator.MybatisCodeHelper" text="MybatisCodeHelper" description="MybatisCodeHelper" popup="true">
             <separator/>
-            <group id="TestActionSubGroup"/>
+            <group id="MybatisCodeHelperSubGroup"/>
             <add-to-group group-id="ToolsMenu" relative-to-action="GenerateJavadoc" anchor="before"/>
 
-            <action id="mybatis.LearnMore" class="com.ccnode.codegenerator.view.ShowLearnMoreAction" text="Learn More"
+            <action id="MybatisCodeHelper.LearnMore" class="com.ccnode.codegenerator.view.ShowLearnMoreAction" text="Learn More"
                     description="Learn_More"/>
             <!--<action id="mybatis.enterLicense" class="com.ccnode.codegenerator.view.EnterLicenseAction" text="Register" description="License"/>-->
 
             <!--<action id="mybatis.generator" class="com.ccnode.codegenerator.view.GenCodeAction" text="genCode" description="A test menu item"/>-->
         </group>
 
-        <group id="generatesqlgroup">
+        <group id="MybatisCodeHelpergeneratesqlgroup">
             <add-to-group group-id="GenerateGroup" relative-to-action="GenerateGetter" anchor="after"/>
-            <action class="com.ccnode.codegenerator.view.GenCodeActionUsingAlt" id="gencodeusingalt"
+            <action class="com.ccnode.codegenerator.view.GenCodeActionUsingAlt" id="MybatisCodeHelpergencodeusingalt"
                     text="generate mybatis files"
                     description="generate sql"/>
         </group>
