@@ -106,6 +106,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
 
         String xmlFileName = srcClassName + ".xml";
         XmlFile psixml = null;
+        //todo use with module?
         PsiFile[] filesByName = PsiShortNamesCache.getInstance(project).getFilesByName(xmlFileName);
         if (filesByName.length > 0) {
             for (PsiFile file : filesByName) {
