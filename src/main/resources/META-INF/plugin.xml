@@ -17,7 +17,6 @@
       <li><p>Jump from mybatis dao interface to mapper xml each other</p></li>
       <li><p>Update sql, mybatis xml file elegantly when the domain class updated</p></li>
       <li><p>Provide insert, insertList,update</p></li>
-      <li><p>Support rich config by config file, and use default config for no config file.</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
@@ -36,9 +35,6 @@
       <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
       <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
       <li><p>默认提供insert，insertList，update</p></li>
-      <li><p>丰富的配置，如果没有配置文件，则会使用默认配置</p></li>
-      <li><p>目前支持MySQL + Java，后续会支持更多的DB</p></li>
-      <li><p>如果喜欢我们的插件，非常感谢您的分享</p></li>
       </ul>
       <p>GenDaoCode 使用方法</p>
       <ul>
