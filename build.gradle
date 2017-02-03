@@ -26,7 +26,7 @@ intellij {
 //    IC-2016.1  IC-14.1.4 IC-2016.3
     version 'IC-2016.1' //IntelliJ IDEA dependency
     plugins 'coverage' //Bundled plugin dependencies
-    pluginName 'codehelper.generator'
+    pluginName 'MyBatisCodeHelper'
     updateSinceUntilBuild false
 //    需要来填写publish这块 类似
 //    publish {
@@ -47,7 +47,7 @@ dependencies{
 }
 
 group 'org.jetbrains'
-version '2017.01.14' // Plugin version
+version '1.0' // Plugin version
 
 
 

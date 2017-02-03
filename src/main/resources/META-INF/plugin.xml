@@ -1,23 +1,14 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.mybatis.generator</id>
-    <name>codehelper.generator</name>
-    <version>2016.12.18</version>
-    <vendor email="zhengjunbase@gmail.com" url="http://www.codehelper.me/generator">CodeHelper</vendor>
+    <name>MyBatisCodeHelper</name>
+    <version>1.0</version>
+    <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
       <div>
-      <p><a href="https://github.com/zhengjunbase/codehelper.generator">GitHub</a>
-      |&nbsp<a href="https://github.com/zhengjunbase/codehelper.generator/issues">Issues</a></p>
+      <p><a href="https://github.com/gejun123456/codehelper.generator">GitHub</a>
+      |&nbsp<a href="https://github.com/gejun123456/codehelper.generator/issues">Issues</a></p>
 
-      <!--<p>An Generator, generate code more easily and productive.</p>-->
-      <!--<p>AutoCoding Features</p>-->
-      <!--<ul>-->
-      <!--<li><p>Auto gen all Setter method(method start with set) when you click AutoCoding btn(support shortcut).</p></li>-->
-      <!--<li><p>Auto gen all Setter method with default value when you click AutoCoding btn twice.</p></li>-->
-      <!--</ul>-->
-       <!--<p>AutoCoding Usage</p>-->
-      <!--<ul>-->
-      <!--<li><p>Click main menu Tools-> Codehelper-> AutoCoding button to generate the code</p></li>-->
       </ul>
       <p>Features</p>
       <ul>
@@ -28,14 +19,14 @@
       <li><p>Provide insert, insertList,update</p></li>
       <li><p>Support rich config by config file, and use default config for no config file.</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
-      <li><a href="https://github.com/zhengjunbase/codehelper.generator">https://github.com/zhengjunbase/codehelper.generator</a> to learn more.</li>
+      <li><a href="https://github.com/gejun123456/codehelper.generator">https://github.com/gejun123456/codehelper.generator</a> to learn more.</li>
       </ul>
       <p>GenDaoCode Usages</p>
       <ul>
       <li>alt+insert (generate mybatis files) on domain class to generate mybatis files (ctrl+N on mac)</li>
       <li>alt+insert (generate mybatis files) on domain class to update mybatis files when domain class add field (command+N on mac)</li>
       <li>alt+enter on dao interface to generate mybatis mapper sql</li>
-      <li>view more on <a href="https://github.com/zhengjunbase/codehelper.generator">https://github.com/zhengjunbase/codehelper.generator</a></li>
+      <li>view more on <a href="https://github.com/gejun123456/codehelper.generator">https://github.com/gejun123456/codehelper.generator</a></li>
       </ul>
 
       <p>GenDaoCode 特性</p>
@@ -54,12 +45,8 @@
       <li><p>在数据库对象上使用alt+insert (generate mybatis files)来生成dao,mapper xml, service, sql (mac上使用ctrl+N)</p></li>
       <li><p>数据库对象添加字段后使用alt+insert (generate mybatis files) 来更新sql,mapper xml中的字段</p></li>
       <li><p>在mybatis接口的方法名上使用alt+enter来生成对应的mapper sql</p></li>
-      <li><p>详细配置: <a href="https://github.com/zhengjunbase/codehelper.generator">https://github.com/zhengjunbase/codehelper.generator</a></p></li>
+      <li><p>详细配置: <a href="https://github.com/gejun123456/codehelper.generator">https://github.com/gejun123456/codehelper.generator</a></p></li>
       </ul>
-      <p>联系作者 加入开发</p>
-      <ul>
-       <li><p> 添加微信zhengjun302, 邀您加入微信交流群</p></li>
-       </ul>
       </div>
     ]]></description>
 
@@ -73,10 +60,7 @@
             <separator/>
             <group id="TestActionSubGroup"/>
             <add-to-group group-id="ToolsMenu" relative-to-action="GenerateJavadoc" anchor="before"/>
-            <action id="mybatis.AutoCoding" class="com.ccnode.codegenerator.view.AutoCodingAction" text="AutoCoding"
-                    description="AutoCoding"/>
-            <action id="mybatis.genMybatisCode" class="com.ccnode.codegenerator.view.GenCodeAction" text="GenDaoCode"
-                    description="GenMybatisCode"/>
+
             <action id="mybatis.LearnMore" class="com.ccnode.codegenerator.view.ShowLearnMoreAction" text="Learn More"
                     description="Learn_More"/>
             <!--<action id="mybatis.enterLicense" class="com.ccnode.codegenerator.view.EnterLicenseAction" text="Register" description="License"/>-->
