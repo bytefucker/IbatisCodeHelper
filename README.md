@@ -1,12 +1,10 @@
 MyBatisCodeHelper 
 =================
 [![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Version](http://phpstorm.espend.de/badge/9445/version)][plugin]  
-<!--[![Gitter][badge-gitter-img]][badge-gitter]-->
 [![Downloads](http://phpstorm.espend.de/badge/9445/downloads)][plugin]
 [![Downloads last month](http://phpstorm.espend.de/badge/9445/last-month)][plugin]
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 <div align="right">
-<a href="README-EN.md">English Documentation</a>
+<a href="README-EN.md">English Documentation</a>25
 </div>
 
 Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,和建表sql, 支持直接从接口方法名直接生成sql.
@@ -159,3 +157,6 @@ feature：
 [badge-gitter]: https://gitter.im/codehelper-generator/Lobby
 [plugin-img]: https://img.shields.io/badge/plugin-9445-orange.svg
 [plugin]: https://plugins.jetbrains.com/plugin/9445
+
+<!--[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)-->
+

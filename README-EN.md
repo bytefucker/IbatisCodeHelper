@@ -1,10 +1,8 @@
 MyBatisCodeHelper
 =================
 [![GitHub release][release-img]][latest-release] [![Jetbrains Plugins][plugin-img]][plugin] [![Version](http://phpstorm.espend.de/badge/9445/version)][plugin] 
-<!--[![Gitter][badge-gitter-img]][badge-gitter]-->
 [![Downloads](http://phpstorm.espend.de/badge/9445/downloads)][plugin]
 [![Downloads last month](http://phpstorm.espend.de/badge/9445/last-month)][plugin]
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 <div align="right">
 <a href="README.md">中文文档</a>
 </div>
@@ -152,3 +150,7 @@ the project in screencut is from [https://github.com/gejun123456/codehelperPlugi
 [badge-gitter]: https://gitter.im/codehelper-generator/Lobby
 [plugin-img]: https://img.shields.io/badge/plugin-9445-orange.svg
 [plugin]: https://plugins.jetbrains.com/plugin/9445
+<!--[![Gitter][badge-gitter-img]][badge-gitter]-->
+<!--[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)-->
+
+
