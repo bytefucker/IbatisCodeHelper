@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.ccnode.codegenerator.MyBatisCodeHelper</id>
     <name>MyBatisCodeHelper</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor email="gejun123456@gmail.com">MyBatisCodeHelper</vendor>
 
     <description><![CDATA[
@@ -13,30 +13,29 @@
       <p>Features</p>
       <ul>
       <li><p>Generate dao, service, sql and mybatis xml file according to domain class</p></li>
-      <li><p>Generate mybatis sql based dao interface method name</p></li>
+      <li><p>Generate mybatis sql based on mybatis interface method name</p></li>
       <li><p>Jump from mybatis dao interface to mapper xml each other</p></li>
-      <li><p>Update sql, mybatis xml file elegantly when the domain class updated</p></li>
       <li><p>Provide insert, insertList,update</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
-      <p>GenDaoCode Usages</p>
+      <p>How to use</p>
       <ul>
       <li>alt+insert (generate mybatis files) on domain class to generate mybatis files (ctrl+N on mac)</li>
-      <li>alt+insert (generate mybatis files) on domain class to update mybatis files when domain class add field (command+N on mac)</li>
-      <li>alt+enter on dao interface to generate mybatis mapper sql</li>
+      <li>alt+insert (generate mybatis files) on domain class to update mybatis files when domain class add field (ctrl+N on mac)</li>
+      <li>alt+enter on dao interface method to generate mybatis mapper sql</li>
       <li>view more on <a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a></li>
       </ul>
 
-      <p>GenDaoCode 特性</p>
+      <p>特性</p>
       <ul>
       <li><p>根据数据库对象一键生成Dao，Service，Xml，Sql文件</p></li>
-      <li><p>根据mybatis接口中的方法名生成对应的mapper sql和方法补全</p></li>
+      <li><p>根据mybatis接口中的方法名生成mybatis的sql</p></li>
       <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
       <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
       <li><p>默认提供insert，insertList，update</p></li>
       </ul>
-      <p>GenDaoCode 使用方法</p>
+      <p>使用方法</p>
       <ul>
       <li><p>在数据库对象上使用alt+insert (generate mybatis files)来生成dao,mapper xml, service, sql (mac上使用ctrl+N)</p></li>
       <li><p>数据库对象添加字段后使用alt+insert (generate mybatis files) 来更新sql,mapper xml中的字段</p></li>
@@ -47,7 +46,8 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      use gradle, fix bugs.
+     <p> 1.1 fix doc</p>
+     <p>1.0 use gradle, fix bugs.</p>
     ]]>
     </change-notes>
 
