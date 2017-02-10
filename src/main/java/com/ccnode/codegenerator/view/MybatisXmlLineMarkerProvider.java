@@ -41,7 +41,7 @@ public class MybatisXmlLineMarkerProvider extends RelatedItemLineMarkerProvider 
         if (!(psiFile instanceof XmlFile))
             return;
         XmlFile xmlFile = (XmlFile) psiFile;
-        if (!xmlFile.getRootTag().getName().equals("mapper")) {
+        if (!xmlFile.getRootTag().getName().equals("sqlMap")) {
             return;
         }
         XmlTag tag = (XmlTag) element;

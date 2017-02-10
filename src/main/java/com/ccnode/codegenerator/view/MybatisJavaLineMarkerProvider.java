@@ -84,7 +84,7 @@ public class MybatisJavaLineMarkerProvider extends RelatedItemLineMarkerProvider
         if (moduleForPsiElement == null) {
             return null;
         }
-        searchService.processUsagesInNonJavaFiles("mapper", new PsiNonJavaFileReferenceProcessor() {
+        searchService.processUsagesInNonJavaFiles("sqlMap", new PsiNonJavaFileReferenceProcessor() {
             @Override
             public boolean process(PsiFile file, int startOffset, int endOffset) {
                 if (file instanceof XmlFile) {
