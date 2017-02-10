@@ -31,7 +31,7 @@ Intellij下代码自动生成插件 支持生成mybatis的dao接口,mapper xml,�
 
 
 **使用 IDE 内置插件系统:**
-- <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>搜索并找到"codehelper.generator"</kbd> > <kbd>Install Plugin</kbd>
+- <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>搜索并找到"MybatisCodeHelper"</kbd> > <kbd>Install Plugin</kbd>
 
 **手动:**
 - 下载[`最新发布的插件包`][latest-release] -> <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>

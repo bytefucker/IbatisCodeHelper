@@ -30,7 +30,7 @@ support following product build version > 141
 
 
 **using IDE plugin system**
-- <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>find"codehelper.generator"</kbd> > <kbd>Install Plugin</kbd>
+- <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>find"MybatisCodeHelper"</kbd> > <kbd>Install Plugin</kbd>
 
 **Manual:**
 - download[`lastest plugin zip`][latest-release] -> <kbd>Preferences(Settings)</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>

@@ -15,7 +15,8 @@
       <li><p>Generate dao, service, sql and mybatis xml file according to domain class</p></li>
       <li><p>Generate mybatis sql based on mybatis interface method name</p></li>
       <li><p>Jump from mybatis dao interface to mapper xml each other</p></li>
-      <li><p>Provide insert, insertList,update</p></li>
+      <li><p>generate files provide insert, insertList,update</p></li>
+      <li><p>support refactor for mybatis interface method name</p></li>
       <li><p>Support java + MySQL and later will support more DB.</p></li>
       <li><a href="https://github.com/gejun123456/MyBatisCodeHelper">https://github.com/gejun123456/MyBatisCodeHelper</a> to learn more.</li>
       </ul>
@@ -34,6 +35,7 @@
       <li><p>mybatis接口文件的mapper xml之间的相互跳转</p></li>
       <li><p>数据库对象更新后一键更新对应的Sql和mybatis xml文件</p></li>
       <li><p>默认提供insert，insertList，update</p></li>
+      <li><p>支持mybatis接口方法名的重构</p></li>
       </ul>
       <p>使用方法</p>
       <ul>
