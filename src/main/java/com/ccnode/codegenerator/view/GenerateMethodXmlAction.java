@@ -332,7 +332,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
     private static List<XmlFile> searchMapperXml(@NotNull Project project, @NotNull PsiElement element, final PsiClass srcClass) {
         PsiSearchHelper searchService = ServiceManager.getService(project, PsiSearchHelper.class);
         List<XmlFile> xmlFiles = new ArrayList<XmlFile>();
-        searchService.processUsagesInNonJavaFiles("mapper", new PsiNonJavaFileReferenceProcessor() {
+        searchService.processUsagesInNonJavaFiles("sqlMap", new PsiNonJavaFileReferenceProcessor() {
             @Override
             public boolean process(PsiFile file, int startOffset, int endOffset) {
                 if (file instanceof XmlFile) {
@@ -401,7 +401,7 @@ public class GenerateMethodXmlAction extends PsiElementBaseIntentionAction {
         if (info.getReturnMap() != null) {
             select.setAttribute("resultMap", info.getReturnMap());
         } else if (info.getReturnClass() != null) {
-            select.setAttribute("resultType", info.getReturnClass());
+            select.setAttribute("resultClass", info.getReturnClass());
         }
         xmlTagAndInfo.setXmlTag(select);
         return xmlTagAndInfo;

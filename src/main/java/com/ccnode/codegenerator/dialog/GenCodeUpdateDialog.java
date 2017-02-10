@@ -59,7 +59,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
         searchService.processUsagesInNonJavaFiles(myClass.getName(), (file, startOffset, endOffset) -> {
             if (file instanceof XmlFile) {
                 XmlFile xmlFile = (XmlFile) file;
-                if (xmlFile.getRootTag() != null && xmlFile.getRootTag().getName().equals("mapper")) {
+                if (xmlFile.getRootTag() != null && xmlFile.getRootTag().getName().equals("sqlMap")) {
                     if (xmlFile.getText().contains(myClass.getQualifiedName())) {
                         xmlFiles.add(xmlFile);
                         return false;
@@ -102,7 +102,7 @@ public class GenCodeUpdateDialog extends DialogWrapper {
             Messages.showErrorDialog("the file is empty", "validate fail");
             return false;
         }
-        if (!myXmlFile.getText().contains("mapper")) {
+        if (!myXmlFile.getText().contains("sqlMap")) {
             Messages.showErrorDialog("the file choosed is not valid mapper for mybatis", "validate fail");
             return false;
         }

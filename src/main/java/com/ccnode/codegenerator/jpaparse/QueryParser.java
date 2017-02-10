@@ -37,7 +37,7 @@ public class QueryParser {
             if (returnClssInfo.getResultMap() != null) {
                 select.setAttribute("resultMap", returnClssInfo.getResultMap());
             } else {
-                select.setAttribute("resultType", returnClssInfo.getReturnClassName());
+                select.setAttribute("resultClass", returnClssInfo.getReturnClassName());
             }
             return select;
         } else if (methodName.startsWith(KeyWordConstants.UPDATE)) {
